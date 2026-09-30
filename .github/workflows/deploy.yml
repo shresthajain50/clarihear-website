@@ -1,0 +1,57 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: End-to-end tests (builds dist with a test key)
+        run: npm run e2e
+      - name: Production build (overwrites the e2e build in dist)
+        run: npm run build
+        env:
+          VITE_BASE: /clarihear-website/
+          VITE_WEB3FORMS_KEY: ${{ secrets.WEB3FORMS_KEY }}
+      - name: Verify dist is the production build
+        run: |
+          if grep -rq "test-key" dist/index.html dist/assets; then
+            echo "dist contains the e2e test key; refusing to deploy" >&2
+            exit 1
+          fi
+          grep -q "/clarihear-website/" dist/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
