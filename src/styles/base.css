@@ -92,6 +92,11 @@ textarea,
   top: 12px;
 }
 
+/* The hidden attribute must win over component display rules (e.g. .btn). */
+[hidden] {
+  display: none !important;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

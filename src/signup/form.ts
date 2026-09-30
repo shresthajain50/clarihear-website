@@ -3,6 +3,26 @@ import {submitSignup} from './submit';
 
 const FIELDS: Field[] = ['name', 'email', 'phone', 'age', 'consent'];
 const BUTTON_TEXT = 'Join early access';
+const CONTACT_EMAIL = 'shresthajain.iitb@gmail.com';
+
+/** No access key: show an honest notice and make the form visibly inert. */
+function closeSignups(form: HTMLFormElement, button: HTMLButtonElement | null): void {
+  const doc = form.ownerDocument;
+  const closed = doc.createElement('p');
+  closed.className = 'signup-closed';
+  const link = doc.createElement('a');
+  link.href = `mailto:${CONTACT_EMAIL}`;
+  link.textContent = CONTACT_EMAIL;
+  closed.append('Sign-ups open very soon. Want a heads-up? Email us at ', link, '.');
+  form.prepend(closed);
+  for (const input of form.querySelectorAll<HTMLInputElement>('input')) input.disabled = true;
+  if (button) {
+    button.disabled = true;
+    button.hidden = true;
+  }
+  // Never submit without a key, even on programmatic/Enter submits.
+  form.addEventListener('submit', e => e.preventDefault());
+}
 
 export interface FormOptions {
   accessKey: string | undefined;
@@ -17,13 +37,7 @@ export function initSignupForm(form: HTMLFormElement, opts: FormOptions): void {
   const submit = opts.submit ?? submitSignup;
 
   if (!accessKey) {
-    const closed = doc.createElement('p');
-    closed.className = 'signup-closed';
-    closed.textContent = 'Sign-ups open very soon.';
-    if (button) button.replaceWith(closed);
-    else form.appendChild(closed);
-    // Never submit without a key, even on programmatic/Enter submits.
-    form.addEventListener('submit', e => e.preventDefault());
+    closeSignups(form, button);
     return;
   }
 

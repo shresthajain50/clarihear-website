@@ -27,7 +27,7 @@ jobs:
       - run: npm test
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
-      - name: End-to-end tests (builds dist with a test key)
+      - name: End-to-end tests (builds dist with a test key, and dist-nokey with an empty key)
         run: npm run e2e
       - name: Production build (overwrites the e2e build in dist)
         run: npm run build

@@ -133,11 +133,25 @@ describe('form controller', () => {
     expect(form.hidden).toBe(false);
   });
 
-  it.each([undefined, '', '   '])('no key (%j) shows closed message and never submits', async key => {
+  it.each([undefined, '', '   '])('no key (%j): notice on top, inputs disabled, no button, never submits', async key => {
     const submit = vi.fn();
     initSignupForm(form, {accessKey: key, submit});
-    expect(document.getElementById('signup-submit')).toBeNull();
-    expect(form.querySelector('p.signup-closed')!.textContent).toBe('Sign-ups open very soon.');
+    const notice = form.querySelector<HTMLElement>('.signup-closed')!;
+    expect(notice).not.toBeNull();
+    expect(notice.textContent).toBe(
+      'Sign-ups open very soon. Want a heads-up? Email us at shresthajain.iitb@gmail.com.',
+    );
+    const link = notice.querySelector('a')!;
+    expect(link.getAttribute('href')).toBe('mailto:shresthajain.iitb@gmail.com');
+    expect(link.textContent).toBe('shresthajain.iitb@gmail.com');
+    // Above the fields.
+    const firstField = form.querySelector('.field')!;
+    expect(notice.compareDocumentPosition(firstField) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const inputs = [...form.querySelectorAll('input')];
+    expect(inputs.length).toBeGreaterThanOrEqual(6);
+    for (const i of inputs) expect(i.disabled, i.id).toBe(true);
+    const btn = document.getElementById('signup-submit') as HTMLButtonElement | null;
+    expect(btn === null || btn.hidden).toBe(true);
     fillValid();
     submitEvent();
     await flush();
