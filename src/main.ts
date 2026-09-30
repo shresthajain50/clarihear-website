@@ -5,6 +5,7 @@ import {initSignupForm} from './signup/form';
 import {initWave} from './visual/wave';
 import {initEnvironmentPicker} from './visual/environments';
 import {initReveal} from './visual/reveal';
+import {initProfile} from './visual/profile';
 
 const accessKey = import.meta.env.VITE_WEB3FORMS_KEY;
 const signupForm = document.getElementById('signup');
@@ -22,5 +23,8 @@ if (waveSvg instanceof SVGSVGElement && waveToggle instanceof HTMLButtonElement)
 
 const envPicker = document.getElementById('env-picker');
 if (envPicker) initEnvironmentPicker(envPicker);
+
+const profile = document.getElementById('profile');
+if (profile) initProfile(profile, {reducedMotion});
 
 initReveal(document, {reducedMotion});

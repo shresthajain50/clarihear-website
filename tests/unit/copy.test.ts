@@ -1,5 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
+import {JSDOM} from 'jsdom';
 import {describe, expect, it} from 'vitest';
 
 const read = (f: string) => readFileSync(resolve(__dirname, '../../', f), 'utf8');
@@ -52,5 +53,64 @@ describe('copy guard', () => {
       expect(footer).toContain('shresthajain.iitb@gmail.com');
       expect(footer).toContain('href="credits.html"');
     }
+  });
+});
+
+describe('hearing-assistance positioning', () => {
+  const doc = new JSDOM(pages['index.html']).window.document;
+  const texts = (sel: string) => [...doc.querySelectorAll(sel)].map(e => e.textContent!.replace(/\s+/g, ' ').trim());
+  const faq = (question: string) =>
+    [...doc.querySelectorAll('#faq details')].find(d => d.querySelector('summary')?.textContent?.trim() === question);
+
+  it('no longer calls itself a sound amplifier in the title or hero lead', () => {
+    expect(doc.title.toLowerCase()).not.toContain('sound amplifier');
+    expect(doc.querySelector('#hero .lead')!.textContent!.toLowerCase()).not.toContain('sound amplifier');
+  });
+
+  it('says what it is: personalised, profile-driven, adults only', () => {
+    expect(texts('.tick-list--is li')).toEqual([
+      'Personalised hearing assistance on your phone and earbuds',
+      'A hearing profile from a quick tone check, or from your audiogram',
+      'Live sound tuned to your profile, frequency by frequency',
+      'Built for adults 18 and over',
+    ]);
+    expect(texts('.tick-list--isnt li')).toEqual([
+      'Not a medical device',
+      "Doesn't diagnose or treat hearing loss",
+      'Not a replacement for a hearing professional',
+    ]);
+  });
+
+  it('describes the three steps accurately', () => {
+    expect(texts('#how .card h3')).toEqual([
+      '1 · A few safety questions',
+      '2 · Build your hearing profile',
+      '3 · Hear it tuned to you',
+    ]);
+    expect(texts('#how .card p')).toEqual([
+      'Anything that needs a professional is flagged first.',
+      'A short tone check, one ear at a time across six pitches, maps how you hear. You can enter a professional audiogram instead.',
+      'ClariHear boosts the pitches you find harder to hear, adapts to where you are, and keeps an instant mute.',
+    ]);
+  });
+
+  it('answers how it personalises and that the tone check is not a medical test, before pricing', () => {
+    const qs = texts('#faq summary');
+    const how = qs.indexOf('How does ClariHear personalise sound?');
+    const med = qs.indexOf('Is the tone check a medical test?');
+    const free = qs.indexOf('Is it free?');
+    expect(how).toBeGreaterThan(-1);
+    expect(med).toBe(how + 1);
+    expect(free).toBe(med + 1);
+    expect(faq('How does ClariHear personalise sound?')!.querySelector('p')!.textContent!.trim()).toBe(
+      'Your tone check (or audiogram) gives an approximate profile for each ear. ClariHear turns it into gentle, capped boosts at each frequency, then adjusts for your surroundings.',
+    );
+    expect(faq('Is the tone check a medical test?')!.querySelector('p')!.textContent!.trim()).toBe(
+      "No. It's a quick, approximate check to personalise your sound. It doesn't diagnose anything. If you're concerned about your hearing, see a hearing professional.",
+    );
+  });
+
+  it('frames Real places as the profile adjusted for the room', () => {
+    expect(doc.querySelector('#places .lead')!.textContent!.trim()).toBe('Your profile, adjusted for where you are.');
   });
 });

@@ -172,3 +172,36 @@ test('environment picker changes description', async ({page}) => {
   expect(before).not.toBe('Busy places with many voices. Less rumble, clearer speech.');
   await expect(page.locator('#env-picker [data-env="cafe"]')).toHaveAttribute('aria-checked', 'true');
 });
+
+test('hearing profile: visible, charts rendered, café toggle retunes the boosts', async ({page}) => {
+  await page.goto('/');
+  const section = page.locator('#profile');
+  await section.scrollIntoViewIfNeeded();
+  await expect(section).toBeVisible();
+  await expect(section.locator('.profile-panel')).toHaveCount(3);
+  await expect(section.locator('#profile-chart svg[role="img"]')).toBeVisible();
+  const values = section.locator('#boost-chart .boost-value');
+  await expect(values).toHaveCount(6);
+  await expect(values.nth(2)).toHaveText('+6.1 dB');
+  const cafe = section.locator('#boost-mode [role="radio"]', {hasText: 'Café'});
+  await cafe.click();
+  await expect(cafe).toHaveAttribute('aria-checked', 'true');
+  await expect(values.nth(2)).toHaveText('+3.1 dB');
+});
+
+test('hearing profile: axis labels are at least 12px on screen', async ({page}) => {
+  await page.goto('/');
+  await page.locator('#profile-chart').scrollIntoViewIfNeeded();
+  const sizes = await page.locator('#profile-chart svg text').evaluateAll(els =>
+    els.map(el => (el as SVGTextElement).getBoundingClientRect().height),
+  );
+  expect(sizes.length).toBeGreaterThan(0);
+  // Rendered glyph box height tracks font size; 12px text yields a box of roughly 12px or more.
+  for (const h of sizes) expect(h).toBeGreaterThanOrEqual(11.5);
+});
+
+test('reduced motion: no pitch pulse', async ({page}) => {
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.goto('/');
+  await expect(page.locator('#profile .is-pulsing')).toHaveCount(0);
+});

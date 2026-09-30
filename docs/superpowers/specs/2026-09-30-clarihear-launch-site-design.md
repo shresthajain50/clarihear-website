@@ -4,7 +4,14 @@ Status: approved in conversation (sections 1–3, 2026-09-30). Host: GitHub Page
 
 ## Purpose
 
-A public pre-launch site for the ClariHear app for iPhone and Android. It explains the product
+A public pre-launch site for the ClariHear app for iPhone and Android. ClariHear is
+personalised hearing assistance: a quick in-app tone check (per ear, six pitches,
+250 Hz–8 kHz) builds the user's hearing profile (or they enter a professional
+audiogram from a report); ClariHear then amplifies each frequency according to
+that profile and adapts to the listening environment. Tone-check profiles are
+fitted extra-gently (lower gain) because earbuds aren't calibrated, and gain is
+capped (Level-2 ceiling 20 dB). The tone check is approximate and not a medical
+test. The site explains the product
 honestly, builds trust, and collects early-access sign-ups (name, email, phone,
 age) that are emailed to **shresthajain.iitb@gmail.com** via Web3Forms. It is
 deliberately different from the app: no hearing features, no audio.
@@ -17,7 +24,9 @@ email, and the page passes an automated accessibility scan.
 
 - Never claim to diagnose, treat or test for hearing loss; never "hearing test",
   "cure", "instead of hearing aids", "clinically proven", "FDA". Say "clearer
-  everyday sound", "amplify conversations", "tone check to personalise your sound".
+  everyday sound", "personalised hearing assistance", "tone check" that builds a
+  "hearing profile" (approximate, "not a medical test"). Every "iPhone" mention also
+  mentions "Android".
 - Not a medical device; for adults 18+; see a hearing professional if concerned.
 - No invented social proof: no testimonials, waitlist counts, press logos,
   ratings, countdowns, discounts or App Store badges.
@@ -48,13 +57,14 @@ system-ui fallback.
 ## Page structure (index.html)
 
 1. Header: wordmark "ClariHear", nav (How it works, Privacy, FAQ), button "Join early access" → #join.
-2. Hero (`#hero`, the scroll-world mount point `data-scroll-world`): eyebrow "Coming soon to iPhone and Android"; h1 "Hear the conversation again."; lead "ClariHear turns your phone and earbuds into a personal sound amplifier, tuned to how you hear and to where you are."; CTA "Join early access"; secondary link "How it works". Visual: animated SVG sound wave (teal→violet) that moves from noisy to clean as the visitor scrolls/points; pause button; static under reduced motion. h1 renders without JS.
-3. What it is / isn't (`#honest`): two columns. Is: "A sound amplifier app for everyday listening", "Personalised with a quick in-app tone check", "Built for adults 18 and over". Isn't: "Not a medical device", "Doesn't diagnose or treat hearing loss", "Not a replacement for a hearing professional".
-4. How it works (`#how`), 3 steps: "1 · A few safety questions" (anything that needs a professional is flagged first); "2 · Check your earbuds and tune" (a left/right check and a short tone check personalise your sound); "3 · Listen live" (conversations, TV and lectures, clearer, with an instant mute).
-5. Real places (`#places`): toggle Quiet home / Office / Café / Outdoors; a 6-bar chart (250 Hz…8 kHz) of that profile's offsets, verbatim from the app: quiet [0,0,0,0,0,0], office [-3,-2,0,0,0,-1], cafe [-8,-6,-3,0,1,-2], outdoors [-10,-6,-2,0,0,-3]; one-line description per profile (app copy).
-6. Safety & privacy (`#privacy-promise`): "Your audio stays on your phone" (processed on-device, never uploaded); "Amplification with limits" (gain is capped, loud rooms turn it down automatically); "Mute is always one tap away"; "We'll tell you when to see a professional".
-7. FAQ (`#faq`, `<details>`): Is ClariHear a hearing aid? (No — a sound amplifier app, not a medical device); When does it launch? (on iPhone and Android; early-access members hear first); Which earbuds work? (Most wired and Bluetooth earbuds); What happens to my sign-up details? (used only for launch and early-access updates; see privacy notice); Is it free? ("We'll share pricing before launch.").
-8. Join (`#join`): form (below). 9. Footer: disclaimer, © 2026 ClariHear, Privacy notice, contact mailto:shresthajain.iitb@gmail.com.
+2. Hero (`#hero`, the scroll-world mount point `data-scroll-world`): eyebrow "Coming soon to iPhone and Android"; h1 "Hear the conversation again."; lead "ClariHear builds your personal hearing profile with a quick tone check, then tunes live sound to it, frequency by frequency, for wherever you are."; CTA "Join early access"; secondary link "How it works". Visual: animated SVG sound wave (teal→violet) that moves from noisy to clean as the visitor scrolls/points; pause button; static under reduced motion. h1 renders without JS.
+3. What it is / isn't (`#honest`): two columns. Is: "Personalised hearing assistance on your phone and earbuds", "A hearing profile from a quick tone check, or from your audiogram", "Live sound tuned to your profile, frequency by frequency", "Built for adults 18 and over". Isn't: "Not a medical device", "Doesn't diagnose or treat hearing loss", "Not a replacement for a hearing professional".
+4. How it works (`#how`), 3 steps: "1 · A few safety questions" (anything that needs a professional is flagged first); "2 · Build your hearing profile" ("A short tone check, one ear at a time across six pitches, maps how you hear. You can enter a professional audiogram instead."); "3 · Hear it tuned to you" ("ClariHear boosts the pitches you find harder to hear, adapts to where you are, and keeps an instant mute.").
+5. Your hearing profile (`#profile`, right after How it works): three linked glass panels (`.card.profile-panel.reveal`, hairline connectors on desktop, stacked on mobile). (1) "Tone check": illustration with Left/Right ear toggle, six pitch dots (250, 500, 1k, 2k, 4k, 8k), "I heard it" pill; one dot pulses (transform/opacity; none under reduced motion). (2) "Your profile": inline SVG audiogram of the example profile, estimated dB HL on a downward axis (0 top, 60 bottom), left ear teal circles [15,20,25,35,45,50], right ear textSecondary crosses [15,20,30,40,50,55], role="img" with the values in its aria-label. (3) "Your boosts": bars of the fitting engine's tone-check gains for the left ear, Everyday [0,0,6.1,6.6,7.7,8.4] dB and Café [0,0,3.1,6.6,8.7,6.4] dB (radiogroup toggle, transform transition), caption "More help where you need it, less where you don't." Note: "Illustrative example computed by ClariHear's fitting engine. Your profile and boosts will differ. Not a medical test." Data lives in `src/visual/profile.ts` (BANDS, EXAMPLE_PROFILE, EXAMPLE_BOOSTS, MAX_GAIN_DB 20).
+6. Everyday moments (`#moments`): photo strip. Real places (`#places`), intro "Your profile, adjusted for where you are.": toggle Quiet home / Office / Café / Outdoors; a 6-bar chart (250 Hz…8 kHz) of that profile's offsets, verbatim from the app: quiet [0,0,0,0,0,0], office [-3,-2,0,0,0,-1], cafe [-8,-6,-3,0,1,-2], outdoors [-10,-6,-2,0,0,-3]; one-line description per profile (app copy).
+7. Safety & privacy (`#privacy-promise`): "Your audio stays on your phone" (processed on-device, never uploaded); "Amplification with limits" (gain is capped, loud rooms turn it down automatically); "Mute is always one tap away"; "We'll tell you when to see a professional".
+8. FAQ (`#faq`, `<details>`): Is ClariHear a hearing aid? (No — a sound amplifier app, not a medical device); When does it launch? (on iPhone and Android; early-access members hear first); Which earbuds work? (Most wired and Bluetooth earbuds); What happens to my sign-up details? (used only for launch and early-access updates; see privacy notice); How does ClariHear personalise sound? ("Your tone check (or audiogram) gives an approximate profile for each ear. ClariHear turns it into gentle, capped boosts at each frequency, then adjusts for your surroundings."); Is the tone check a medical test? ("No. It's a quick, approximate check to personalise your sound. It doesn't diagnose anything. If you're concerned about your hearing, see a hearing professional."); Is it free? ("We'll share pricing before launch.").
+9. Join (`#join`): form (below). 10. Footer: disclaimer, © 2026 ClariHear, Privacy notice, contact mailto:shresthajain.iitb@gmail.com.
 
 privacy.html: who we are + contact; data collected (name, email, phone, age) and why (launch and early-access updates only); processed by Web3Forms and stored in the ClariHear inbox; kept until 12 months after launch, then deleted; never sold; rights (access, correct, erase, withdraw — email us); withdrawal as easy as consent; complaints (India: Data Protection Board; EU: your supervisory authority).
 
@@ -77,4 +87,4 @@ Only transform/opacity animate; reveals 12px rise + fade, 300 ms ease-out; no sc
 
 ## Testing
 
-Vitest: validation rules, submit client (all response classes, mocked fetch), form controller (jsdom), environments data parity with the app, chart rendering, copy guard (no banned claim words in index.html/privacy.html). Playwright: full sign-up with mocked Web3Forms (success, 429, offline), errors + focus, no-key fallback, mobile 375px no horizontal scroll, reduced motion, axe (no violations) on both pages.
+Vitest: validation rules, submit client (all response classes, mocked fetch), form controller (jsdom), environments data parity with the app, chart rendering, hearing-profile data and toggle, copy guard (no banned claim words in index.html/privacy.html). Playwright: full sign-up with mocked Web3Forms (success, 429, offline), errors + focus, no-key fallback, mobile 375px no horizontal scroll, reduced motion, axe (no violations) on both pages.

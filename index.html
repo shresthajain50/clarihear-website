@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0A0F1C" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>ClariHear - a personal sound amplifier for iPhone and Android</title>
-    <meta name="description" content="ClariHear turns your phone and earbuds into a personal sound amplifier for clearer everyday sound. Join the early-access list." />
+    <title>ClariHear - personalised hearing assistance for iPhone and Android</title>
+    <meta name="description" content="A quick tone check builds your hearing profile. ClariHear then tunes every frequency of live sound to it, on your phone and earbuds. Join the early-access list." />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
@@ -27,7 +27,7 @@
           <div class="hero-copy">
             <p class="eyebrow">Coming soon to iPhone and Android</p>
             <h1 id="hero-title">Hear the conversation again.</h1>
-            <p class="lead">ClariHear turns your phone and earbuds into a personal sound amplifier, tuned to how you hear and to where you are.</p>
+            <p class="lead">ClariHear builds your personal hearing profile with a quick tone check, then tunes live sound to it, frequency by frequency, for wherever you are.</p>
             <div class="hero-actions">
               <a class="btn btn--primary" href="#join">Join early access</a>
               <a class="btn btn--ghost" href="#how">How it works</a>
@@ -66,8 +66,9 @@
             <div class="card reveal">
               <h3>What it is</h3>
               <ul class="tick-list tick-list--is">
-                <li>A sound amplifier app for everyday listening</li>
-                <li>Personalised with a quick in-app tone check</li>
+                <li>Personalised hearing assistance on your phone and earbuds</li>
+                <li>A hearing profile from a quick tone check, or from your audiogram</li>
+                <li>Live sound tuned to your profile, frequency by frequency</li>
                 <li>Built for adults 18 and over</li>
               </ul>
             </div>
@@ -94,15 +95,75 @@
             </div>
             <div class="card card--photo reveal">
               <img class="step-photo step-photo--earbuds" src="images/earbuds.jpg" srcset="images/earbuds-800.jpg 800w, images/earbuds-1200.jpg 1200w, images/earbuds.jpg 1600w" sizes="(min-width: 1080px) 340px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1600" height="1162" loading="lazy" decoding="async" alt="Hands holding earbuds and a phone" />
-              <h3><span class="step-num">2 · </span>Check your earbuds and tune</h3>
-              <p>A left/right check and a short tone check personalise your sound.</p>
+              <h3><span class="step-num">2 · </span>Build your hearing profile</h3>
+              <p>A short tone check, one ear at a time across six pitches, maps how you hear. You can enter a professional audiogram instead.</p>
             </div>
             <div class="card card--photo reveal">
               <img class="step-photo step-photo--listening" src="images/listening.jpg" srcset="images/listening-800.jpg 800w, images/listening-1200.jpg 1200w, images/listening.jpg 1600w" sizes="(min-width: 1080px) 340px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1600" height="2400" loading="lazy" decoding="async" alt="Someone putting in an earbud" />
-              <h3><span class="step-num">3 · </span>Listen live</h3>
-              <p>Conversations, TV and lectures, clearer, with an instant mute.</p>
+              <h3><span class="step-num">3 · </span>Hear it tuned to you</h3>
+              <p>ClariHear boosts the pitches you find harder to hear, adapts to where you are, and keeps an instant mute.</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section id="profile" class="profile" aria-labelledby="profile-title">
+        <div class="container">
+          <p class="eyebrow reveal">Personalised to you</p>
+          <h2 id="profile-title" class="reveal">Your hearing profile</h2>
+          <p class="lead reveal">A quick tone check maps how you hear. ClariHear turns that map into sound tuned to you.</p>
+          <div class="profile-flow">
+            <article class="card profile-panel reveal" aria-labelledby="panel-tone-title">
+              <p class="panel-step" aria-hidden="true">01</p>
+              <h3 id="panel-tone-title">Tone check</h3>
+              <p class="panel-sub">One ear at a time, six pitches from low to high. Tap when you hear each tone.</p>
+              <div class="panel-stage tone-check" role="img" aria-label="Illustration of the tone check: choose the left or right ear, then tap I heard it as each of six pitches plays, from 250 Hz to 8 kHz.">
+                <div class="ear-toggle"><span class="is-on">Left</span><span>Right</span></div>
+                <div class="pitch-row">
+                  <div class="pitch" data-state="done"><span class="pitch-dot"></span><span class="pitch-label">250</span></div>
+                  <div class="pitch" data-state="done"><span class="pitch-dot"></span><span class="pitch-label">500</span></div>
+                  <div class="pitch" data-state="done"><span class="pitch-dot"></span><span class="pitch-label">1k</span></div>
+                  <div class="pitch" data-state="current"><span class="pitch-dot" data-current></span><span class="pitch-label">2k</span></div>
+                  <div class="pitch"><span class="pitch-dot"></span><span class="pitch-label">4k</span></div>
+                  <div class="pitch"><span class="pitch-dot"></span><span class="pitch-label">8k</span></div>
+                </div>
+                <p class="tone-status">Playing 2 kHz &middot; left ear</p>
+                <span class="heard-pill">I heard it</span>
+              </div>
+            </article>
+            <div class="profile-link" aria-hidden="true"></div>
+            <article class="card profile-panel reveal" aria-labelledby="panel-profile-title">
+              <p class="panel-step" aria-hidden="true">02</p>
+              <h3 id="panel-profile-title">Your profile</h3>
+              <p class="panel-sub">An approximate map of the softest level you hear at each pitch, per ear.</p>
+              <div class="panel-stage profile-stage">
+                <div id="profile-chart" class="profile-chart"></div>
+                <ul class="ag-legend">
+                  <li><span class="key key--left" aria-hidden="true"></span>Left ear</li>
+                  <li><span class="key key--right" aria-hidden="true"></span>Right ear</li>
+                </ul>
+                <p class="ag-note">Estimated dB HL. Lower on the chart means a pitch needs to be louder.</p>
+              </div>
+            </article>
+            <div class="profile-link" aria-hidden="true"></div>
+            <article class="card profile-panel reveal" aria-labelledby="panel-boost-title">
+              <p class="panel-step" aria-hidden="true">03</p>
+              <h3 id="panel-boost-title">Your boosts</h3>
+              <p class="panel-sub">Gentle, capped boosts at each pitch for the left ear, adjusted for where you are.</p>
+              <div class="panel-stage boost-stage">
+                <div class="boost-head">
+                  <div id="boost-mode" class="seg" role="radiogroup" aria-label="Example setting">
+                    <button type="button" role="radio" aria-checked="true" tabindex="0" data-mode="everyday">Everyday</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" data-mode="cafe">Café</button>
+                  </div>
+                  <span class="boost-unit">Boost, dB</span>
+                </div>
+                <div id="boost-chart" class="boost-chart"></div>
+                <p class="boost-caption">More help where you need it, less where you don't.</p>
+              </div>
+            </article>
+          </div>
+          <p class="profile-note reveal">Illustrative example computed by ClariHear's fitting engine. Your profile and boosts will differ. Not a medical test.</p>
         </div>
       </section>
 
@@ -130,7 +191,7 @@
       <section id="places" aria-labelledby="places-title">
         <div class="container">
           <h2 id="places-title" class="reveal">Real places</h2>
-          <p class="lead reveal">Pick a place to see how ClariHear reshapes your sound there.</p>
+          <p class="lead reveal">Your profile, adjusted for where you are.</p>
           <div class="card reveal">
             <div id="env-picker" class="env-picker" role="radiogroup" aria-label="Listening place">
               <button type="button" role="radio" aria-checked="true" tabindex="0" data-env="quiet">Quiet home</button>
@@ -196,6 +257,14 @@
           <details class="reveal">
             <summary>What happens to my sign-up details?</summary>
             <p>They are used only for launch and early-access updates. See our <a href="privacy.html">privacy notice</a>.</p>
+          </details>
+          <details class="reveal">
+            <summary>How does ClariHear personalise sound?</summary>
+            <p>Your tone check (or audiogram) gives an approximate profile for each ear. ClariHear turns it into gentle, capped boosts at each frequency, then adjusts for your surroundings.</p>
+          </details>
+          <details class="reveal">
+            <summary>Is the tone check a medical test?</summary>
+            <p>No. It's a quick, approximate check to personalise your sound. It doesn't diagnose anything. If you're concerned about your hearing, see a hearing professional.</p>
           </details>
           <details class="reveal">
             <summary>Is it free?</summary>

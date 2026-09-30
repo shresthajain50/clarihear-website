@@ -295,6 +295,504 @@ section {
   object-position: 50% 35%;
 }
 
+/* Your hearing profile: tone check -> profile -> boosts, linked left to right (stacked on mobile). */
+.profile {
+  background:
+    radial-gradient(ellipse 55% 45% at 12% 8%, rgba(0, 212, 255, 0.07), transparent 70%),
+    radial-gradient(ellipse 45% 45% at 92% 96%, rgba(123, 97, 255, 0.09), transparent 70%),
+    var(--c-bg1);
+}
+
+.profile .lead {
+  margin-bottom: 32px;
+}
+
+.profile-flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: stretch;
+  max-width: 560px;
+}
+
+@media (min-width: 960px) {
+  .profile-flow {
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr) 32px minmax(0, 1fr);
+    align-items: stretch;
+  }
+}
+
+.profile-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 20px 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+}
+
+.panel-step {
+  margin: 0 0 10px;
+  color: var(--c-primary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  font-variant-numeric: tabular-nums;
+}
+
+.profile-panel h3 {
+  margin-bottom: 6px;
+}
+
+.panel-sub {
+  color: var(--c-text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+@media (min-width: 960px) {
+  .panel-sub {
+    min-height: 3em;
+  }
+}
+
+/* Connector between panels: a hairline with a small chevron, teal fading to violet (decorative). */
+.profile-link {
+  position: relative;
+  justify-self: center;
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(180deg, rgba(0, 212, 255, 0.7), rgba(123, 97, 255, 0.7));
+}
+
+.profile-link::after {
+  content: '';
+  position: absolute;
+  left: -3.5px;
+  bottom: 1px;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid rgba(123, 97, 255, 0.85);
+  border-bottom: 1.5px solid rgba(123, 97, 255, 0.85);
+  transform: rotate(45deg);
+}
+
+@media (min-width: 960px) {
+  .profile-link {
+    align-self: center;
+    justify-self: stretch;
+    width: auto;
+    height: 1px;
+    margin: 0 4px;
+    background: linear-gradient(90deg, rgba(0, 212, 255, 0.7), rgba(123, 97, 255, 0.7));
+  }
+  .profile-link::after {
+    left: auto;
+    right: 1px;
+    bottom: -3px;
+    transform: rotate(-45deg);
+  }
+}
+
+/* Shared inset stage for the three visuals; equal height across the row. */
+.panel-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: rgba(5, 8, 16, 0.55);
+  border: 1px solid var(--c-glass-border);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+/* 1 · Tone check illustration */
+.tone-check {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  justify-content: center;
+  padding: 24px 14px;
+}
+
+.ear-toggle {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid var(--c-glass-border);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.ear-toggle span {
+  padding: 5px 18px;
+  border-radius: 999px;
+  color: var(--c-text-secondary);
+}
+
+.ear-toggle .is-on {
+  background: var(--c-primary);
+  color: var(--c-bg0);
+}
+
+.pitch-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  width: 100%;
+}
+
+/* Track through the dot centres, filled up to the pitch being played. */
+.pitch-row::before,
+.pitch-row::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: calc(100% / 12);
+  height: 2px;
+  border-radius: 2px;
+}
+
+.pitch-row::before {
+  right: calc(100% / 12);
+  background: rgba(148, 163, 184, 0.25);
+}
+
+.pitch-row::after {
+  width: 50%;
+  background: linear-gradient(90deg, rgba(0, 212, 255, 0.35), var(--c-primary));
+}
+
+.pitch {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.pitch-dot {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--c-bg2);
+  border: 2px solid rgba(148, 163, 184, 0.55);
+}
+
+.pitch[data-state='done'] .pitch-dot {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+}
+
+.pitch[data-state='current'] .pitch-dot {
+  background: var(--c-primary);
+  border-color: var(--c-text);
+  box-shadow: 0 0 0 5px rgba(0, 212, 255, 0.18);
+}
+
+.pitch-dot.is-pulsing::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid var(--c-primary);
+  animation: pitch-pulse 1.8s ease-out infinite;
+}
+
+@keyframes pitch-pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+
+.pitch-label {
+  color: var(--c-text-secondary);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pitch[data-state='current'] .pitch-label {
+  color: var(--c-text);
+  font-weight: 600;
+}
+
+.tone-status {
+  margin: 0;
+  color: var(--c-text-secondary);
+  font-size: 0.875rem;
+}
+
+.heard-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 30px;
+  border-radius: 999px;
+  background: var(--c-primary);
+  color: var(--c-bg0);
+  font-weight: 600;
+  box-shadow: 0 10px 28px rgba(0, 212, 255, 0.22);
+}
+
+/* 2 · Audiogram-style profile chart */
+.profile-stage {
+  padding: 14px 10px 16px;
+  justify-content: center;
+}
+
+.profile-chart {
+  padding: 0 0 2px;
+}
+
+.audiogram {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.ag-grid line {
+  stroke-width: 1;
+}
+
+.ag-grid .major {
+  stroke: rgba(148, 163, 184, 0.3);
+}
+
+.ag-grid .minor {
+  stroke: rgba(148, 163, 184, 0.12);
+}
+
+.ag-tick {
+  fill: var(--c-text-secondary);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ag-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ear-left .ag-line {
+  stroke: var(--c-primary);
+  stroke-width: 2.5;
+}
+
+.ear-left circle {
+  fill: var(--c-bg1);
+  stroke: var(--c-primary);
+  stroke-width: 2.5;
+}
+
+.ear-right .ag-line {
+  stroke: var(--c-text-secondary);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.ear-right .cross {
+  stroke: var(--c-text-secondary);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.ag-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 18px;
+  list-style: none;
+  margin: 12px 6px 0;
+  padding: 0;
+  color: var(--c-text);
+  font-size: 0.8125rem;
+}
+
+.ag-note {
+  margin: 8px 6px 0;
+  color: var(--c-text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.ag-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.key {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+
+.key--left {
+  border-radius: 50%;
+  border: 2.5px solid var(--c-primary);
+}
+
+.key--right {
+  background:
+    linear-gradient(45deg, transparent 42%, var(--c-text-secondary) 42% 58%, transparent 58%),
+    linear-gradient(-45deg, transparent 42%, var(--c-text-secondary) 42% 58%, transparent 58%);
+}
+
+/* 3 · Boosts: bars grow up from a 0 dB baseline; only transform animates. */
+.boost-stage {
+  justify-content: space-between;
+}
+
+.boost-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.boost-unit {
+  color: var(--c-text-secondary);
+  font-size: 0.8125rem;
+}
+
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid var(--c-glass-border);
+  background: rgba(5, 8, 16, 0.55);
+}
+
+.seg [role='radio'] {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--c-text-secondary);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.seg [role='radio'][aria-checked='true'] {
+  background: var(--c-primary);
+  color: var(--c-bg0);
+}
+
+.boost-chart {
+  /* --boost-db must match PX_PER_DB in src/visual/profile.ts; the track spans 10 dB. */
+  --boost-db: 12px;
+  display: flex;
+  gap: 6px;
+  padding: 36px 0 0;
+}
+
+.boost-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.boost-track {
+  position: relative;
+  width: 100%;
+  height: calc(var(--boost-db) * 10);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.45);
+}
+
+.boost-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 70%;
+  max-width: 30px;
+  height: 100%;
+  margin: 0 auto;
+  border-radius: 6px 6px 1px 1px;
+  background: linear-gradient(180deg, var(--c-primary), rgba(0, 153, 187, 0.45));
+  transform-origin: bottom;
+  transform: scaleY(0);
+  transition: transform 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.boost-value {
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  bottom: 6px;
+  text-align: center;
+  color: var(--c-text);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  transition: transform 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* The unit lives in the "Boost, dB" header; kept in the DOM so each label reads "+6.1 dB". */
+.boost-value .u {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.boost-col[data-zero='true'] .boost-value {
+  color: var(--c-text-secondary);
+  font-weight: 600;
+}
+
+.boost-label {
+  margin-top: 8px;
+  color: var(--c-text-secondary);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.boost-caption {
+  margin: 16px 0 0;
+  color: var(--c-text);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.profile-note {
+  max-width: 64ch;
+  margin: 28px auto 0;
+  text-align: center;
+  color: var(--c-text-secondary);
+  font-size: 0.875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pitch-dot.is-pulsing::after {
+    animation: none;
+    display: none;
+  }
+  .boost-bar,
+  .boost-value {
+    transition: none;
+  }
+}
+
 /* Everyday moments strip */
 .moments-grid {
   display: grid;

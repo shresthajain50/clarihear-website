@@ -13,15 +13,15 @@ const pages = {
 describe('platform copy', () => {
   const idx = pages['index.html'].window.document;
   it('has exact title, description and eyebrow', () => {
-    expect(idx.title).toBe('ClariHear - a personal sound amplifier for iPhone and Android');
+    expect(idx.title).toBe('ClariHear - personalised hearing assistance for iPhone and Android');
     expect(idx.querySelector('meta[name=description]')?.getAttribute('content')).toBe(
-      'ClariHear turns your phone and earbuds into a personal sound amplifier for clearer everyday sound. Join the early-access list.',
+      'A quick tone check builds your hearing profile. ClariHear then tunes every frequency of live sound to it, on your phone and earbuds. Join the early-access list.',
     );
     expect(idx.querySelector('.eyebrow')?.textContent?.trim()).toBe('Coming soon to iPhone and Android');
   });
   it('has exact lead, FAQ launch answer and privacy intro', () => {
     expect(idx.querySelector('.lead')?.textContent?.trim()).toBe(
-      'ClariHear turns your phone and earbuds into a personal sound amplifier, tuned to how you hear and to where you are.',
+      'ClariHear builds your personal hearing profile with a quick tone check, then tunes live sound to it, frequency by frequency, for wherever you are.',
     );
     const faq = [...idx.querySelectorAll('details')].find(d => d.querySelector('summary')?.textContent?.trim() === 'When does it launch?');
     expect(faq?.querySelector('p')?.textContent?.trim()).toBe('On iPhone and Android. Early-access members hear first.');

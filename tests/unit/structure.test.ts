@@ -32,6 +32,64 @@ describe('index.html structure', () => {
     expect(q('#places p#env-desc')).not.toBeNull();
   });
 
+  describe('hearing profile section', () => {
+    const ids = [...doc.querySelectorAll('main > section')].map(s => s.id);
+
+    it('sits right after How it works, before the moments and places', () => {
+      expect(ids).toContain('profile');
+      expect(ids.indexOf('profile')).toBe(ids.indexOf('how') + 1);
+      expect(ids.indexOf('profile')).toBeLessThan(ids.indexOf('moments'));
+      expect(ids.indexOf('profile')).toBeLessThan(ids.indexOf('places'));
+      expect(q('#profile h2')?.textContent?.trim()).toBe('Your hearing profile');
+    });
+
+    it('has three linked reveal panels in order', () => {
+      const panels = [...doc.querySelectorAll('#profile .profile-panel')];
+      expect(panels).toHaveLength(3);
+      expect(panels.map(p => p.querySelector('h3')?.textContent?.trim())).toEqual([
+        'Tone check',
+        'Your profile',
+        'Your boosts',
+      ]);
+      for (const p of panels) {
+        expect(p.classList.contains('card')).toBe(true);
+        expect(p.classList.contains('reveal')).toBe(true);
+      }
+      const links = [...doc.querySelectorAll('#profile .profile-link')];
+      expect(links).toHaveLength(2);
+      for (const l of links) expect(l.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    it('illustrates the tone check with ears, six pitches and an "I heard it" pill', () => {
+      const tone = q('#profile .tone-check')!;
+      expect(tone.getAttribute('role')).toBe('img');
+      expect(tone.getAttribute('aria-label')).toBeTruthy();
+      expect([...tone.querySelectorAll('.ear-toggle span')].map(e => e.textContent!.trim())).toEqual(['Left', 'Right']);
+      expect([...tone.querySelectorAll('.pitch-label')].map(e => e.textContent!.trim())).toEqual([
+        '250',
+        '500',
+        '1k',
+        '2k',
+        '4k',
+        '8k',
+      ]);
+      expect(tone.querySelectorAll('.pitch-dot')).toHaveLength(6);
+      expect(tone.querySelector('.heard-pill')?.textContent?.trim()).toBe('I heard it');
+    });
+
+    it('has chart mounts, the Everyday / Café toggle, caption and disclaimer', () => {
+      expect(q('#profile #profile-chart')).not.toBeNull();
+      expect(q('#profile #boost-chart')).not.toBeNull();
+      const modes = [...doc.querySelectorAll('#boost-mode[role=radiogroup] button[role=radio]')];
+      expect(modes.map(m => m.textContent!.trim())).toEqual(['Everyday', 'Café']);
+      expect(modes.map(m => m.getAttribute('aria-checked'))).toEqual(['true', 'false']);
+      expect(q('#profile .boost-caption')?.textContent?.trim()).toBe("More help where you need it, less where you don't.");
+      expect(q('#profile .profile-note')?.textContent?.trim()).toBe(
+        "Illustrative example computed by ClariHear's fitting engine. Your profile and boosts will differ. Not a medical test.",
+      );
+    });
+  });
+
   it('has the signup form hooks', () => {
     expect(q('section#join form#signup')).not.toBeNull();
     expect(q('div#signup-status[aria-live=polite]')).not.toBeNull();
@@ -167,9 +225,9 @@ describe('index.html structure', () => {
       ]);
     });
 
-    it('adds an everyday-moments strip between How it works and Real places', () => {
+    it('adds an everyday-moments strip between the hearing profile and Real places', () => {
       const ids = [...doc.querySelectorAll('main > section')].map(s => s.id);
-      expect(ids.indexOf('moments')).toBe(ids.indexOf('how') + 1);
+      expect(ids.indexOf('moments')).toBe(ids.indexOf('profile') + 1);
       expect(ids.indexOf('places')).toBe(ids.indexOf('moments') + 1);
       expect(q('#moments h2')?.textContent?.trim()).toBe('Made for everyday moments');
       const cards = [...doc.querySelectorAll('#moments .moment')];
