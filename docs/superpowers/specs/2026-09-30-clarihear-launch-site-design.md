@@ -4,7 +4,7 @@ Status: approved in conversation (sections 1–3, 2026-09-30). Host: GitHub Page
 
 ## Purpose
 
-A public pre-launch site for the ClariHear iPhone app. It explains the product
+A public pre-launch site for the ClariHear app for iPhone and Android. It explains the product
 honestly, builds trust, and collects early-access sign-ups (name, email, phone,
 age) that are emailed to **shresthajain.iitb@gmail.com** via Web3Forms. It is
 deliberately different from the app: no hearing features, no audio.
@@ -48,12 +48,12 @@ system-ui fallback.
 ## Page structure (index.html)
 
 1. Header: wordmark "ClariHear", nav (How it works, Privacy, FAQ), button "Join early access" → #join.
-2. Hero (`#hero`, the scroll-world mount point `data-scroll-world`): eyebrow "Coming soon to iPhone"; h1 "Hear the conversation again."; lead "ClariHear turns your iPhone and earbuds into a personal sound amplifier, tuned to how you hear and to where you are."; CTA "Join early access"; secondary link "How it works". Visual: animated SVG sound wave (teal→violet) that moves from noisy to clean as the visitor scrolls/points; pause button; static under reduced motion. h1 renders without JS.
+2. Hero (`#hero`, the scroll-world mount point `data-scroll-world`): eyebrow "Coming soon to iPhone and Android"; h1 "Hear the conversation again."; lead "ClariHear turns your phone and earbuds into a personal sound amplifier, tuned to how you hear and to where you are."; CTA "Join early access"; secondary link "How it works". Visual: animated SVG sound wave (teal→violet) that moves from noisy to clean as the visitor scrolls/points; pause button; static under reduced motion. h1 renders without JS.
 3. What it is / isn't (`#honest`): two columns. Is: "A sound amplifier app for everyday listening", "Personalised with a quick in-app tone check", "Built for adults 18 and over". Isn't: "Not a medical device", "Doesn't diagnose or treat hearing loss", "Not a replacement for a hearing professional".
 4. How it works (`#how`), 3 steps: "1 · A few safety questions" (anything that needs a professional is flagged first); "2 · Check your earbuds and tune" (a left/right check and a short tone check personalise your sound); "3 · Listen live" (conversations, TV and lectures, clearer, with an instant mute).
 5. Real places (`#places`): toggle Quiet home / Office / Café / Outdoors; a 6-bar chart (250 Hz…8 kHz) of that profile's offsets, verbatim from the app: quiet [0,0,0,0,0,0], office [-3,-2,0,0,0,-1], cafe [-8,-6,-3,0,1,-2], outdoors [-10,-6,-2,0,0,-3]; one-line description per profile (app copy).
 6. Safety & privacy (`#privacy-promise`): "Your audio stays on your phone" (processed on-device, never uploaded); "Amplification with limits" (gain is capped, loud rooms turn it down automatically); "Mute is always one tap away"; "We'll tell you when to see a professional".
-7. FAQ (`#faq`, `<details>`): Is ClariHear a hearing aid? (No — a sound amplifier app, not a medical device); When does it launch? (iPhone first; early-access members hear first); Which earbuds work? (Most wired and Bluetooth earbuds); What happens to my sign-up details? (used only for launch and early-access updates; see privacy notice); Is it free? ("We'll share pricing before launch.").
+7. FAQ (`#faq`, `<details>`): Is ClariHear a hearing aid? (No — a sound amplifier app, not a medical device); When does it launch? (on iPhone and Android; early-access members hear first); Which earbuds work? (Most wired and Bluetooth earbuds); What happens to my sign-up details? (used only for launch and early-access updates; see privacy notice); Is it free? ("We'll share pricing before launch.").
 8. Join (`#join`): form (below). 9. Footer: disclaimer, © 2026 ClariHear, Privacy notice, contact mailto:shresthajain.iitb@gmail.com.
 
 privacy.html: who we are + contact; data collected (name, email, phone, age) and why (launch and early-access updates only); processed by Web3Forms and stored in the ClariHear inbox; kept until 12 months after launch, then deleted; never sold; rights (access, correct, erase, withdraw — email us); withdrawal as easy as consent; complaints (India: Data Protection Board; EU: your supervisory authority).
