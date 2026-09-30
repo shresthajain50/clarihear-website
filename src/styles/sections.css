@@ -1258,3 +1258,105 @@ details > p {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* React Bits islands (added only when motion is allowed) */
+/* The sweep is driven by ShinyText's own motion value; drop the vendored CSS keyframes. */
+.eyebrow .shiny-text {
+  animation: none;
+}
+
+.blur-heading__words {
+  justify-content: inherit;
+}
+
+/* In forced colours the gradient text fill would vanish; fall back to the system text colour. */
+@media (forced-colors: active) {
+  .eyebrow .shiny-text {
+    -webkit-text-fill-color: currentColor;
+    background: none;
+  }
+}
+
+/* SoftAurora: decorative canvas behind the hero copy (only with motion allowed and WebGL). */
+.hero-aurora {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-aurora canvas {
+  display: block;
+  animation: hero-aurora-in 1.6s ease-out both;
+}
+
+@keyframes hero-aurora-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+#hero > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* SpotlightCard: a glow layer behind the card's content (fine pointers only). */
+.has-spotlight {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight-host {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* StarBorder: the hero CTA keeps its pill shape, 44px target and focus ring. */
+.btn.btn--star {
+  padding: 0;
+  background: transparent;
+}
+
+.btn--star .star-border-container {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  border-radius: 999px;
+  background: rgba(0, 212, 255, 0.35);
+}
+
+.btn--star .inner-content {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+@media (forced-colors: active) {
+  .btn--star .border-gradient-top,
+  .btn--star .border-gradient-bottom {
+    display: none;
+  }
+}
+
+/* Print: show the plain heading text (animated words may still be at opacity 0) and solid CTAs. */
+@media print {
+  .blur-heading { display: none; }
+  h2 > .visually-hidden { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; clip-path: none; white-space: normal; }
+  .reveal--pending { opacity: 1; transform: none; }
+  .btn.btn--star { background: #00d4ff; color: #0a0f1c; }
+}

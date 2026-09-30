@@ -34,6 +34,8 @@ jobs:
         env:
           VITE_BASE: /clarihear-website/
           VITE_WEB3FORMS_KEY: ${{ secrets.WEB3FORMS_KEY }}
+      - name: JS size budget (checks the production build in dist)
+        run: npm run test:budget
       - name: Verify dist is the production build
         run: |
           if grep -rq "test-key" dist/index.html dist/assets; then

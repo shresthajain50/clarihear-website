@@ -42,6 +42,7 @@ test('no key: honest notice, inert form, nothing sent to Web3Forms', async ({pag
 test('no key: axe finds zero violations', async ({page}) => {
   const AxeBuilder = (await import('@axe-core/playwright')).default;
   await page.goto('/');
+  await page.waitForSelector('html[data-islands]', {state: 'attached'}); // islands load after first paint
   for (const el of await page.locator('.reveal').all()) await el.scrollIntoViewIfNeeded();
   await expect(page.locator('.reveal--pending')).toHaveCount(0);
   for (const el of await page.locator('.reveal').all()) await expect(el).toHaveCSS('opacity', '1');
