@@ -23,24 +23,31 @@
     </header>
     <main id="main">
       <section id="hero" class="hero" data-scroll-world aria-labelledby="hero-title">
-        <div class="container">
-          <p class="eyebrow">Coming soon to iPhone and Android</p>
-          <h1 id="hero-title">Hear the conversation again.</h1>
-          <p class="lead">ClariHear turns your phone and earbuds into a personal sound amplifier, tuned to how you hear and to where you are.</p>
-          <div class="hero-actions">
-            <a class="btn btn--primary" href="#join">Join early access</a>
-            <a class="btn btn--ghost" href="#how">How it works</a>
+        <div class="container hero-layout">
+          <div class="hero-copy">
+            <p class="eyebrow">Coming soon to iPhone and Android</p>
+            <h1 id="hero-title">Hear the conversation again.</h1>
+            <p class="lead">ClariHear turns your phone and earbuds into a personal sound amplifier, tuned to how you hear and to where you are.</p>
+            <div class="hero-actions">
+              <a class="btn btn--primary" href="#join">Join early access</a>
+              <a class="btn btn--ghost" href="#how">How it works</a>
+            </div>
           </div>
-          <div class="wave-wrap">
-            <svg id="wave" viewBox="0 0 800 160" role="img" aria-label="A sound wave that moves from noisy to clean" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="wave-grad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0" stop-color="#00D4FF" />
-                  <stop offset="1" stop-color="#7B61FF" />
-                </linearGradient>
-              </defs>
-              <path d="M0 80 C 100 20, 200 140, 300 80 S 500 20, 600 80 S 750 120, 800 80" fill="none" stroke="url(#wave-grad)" stroke-width="4" stroke-linecap="round" />
-            </svg>
+          <div class="hero-media">
+            <div class="hero-card">
+              <img class="hero-photo" src="images/hero.jpg" srcset="images/hero-800.jpg 800w, images/hero-1200.jpg 1200w, images/hero.jpg 2400w" sizes="(min-width: 1080px) 510px, (min-width: 960px) 47vw, calc(100vw - 32px)" width="2400" height="1600" fetchpriority="high" decoding="async" alt="People talking at a lamp-lit restaurant table" />
+              <div class="wave-wrap">
+                <svg id="wave" viewBox="0 0 800 160" role="img" aria-label="A sound wave that moves from noisy to clean" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="wave-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0" stop-color="#00D4FF" />
+                      <stop offset="1" stop-color="#7B61FF" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M0 80 C 100 20, 200 140, 300 80 S 500 20, 600 80 S 750 120, 800 80" fill="none" stroke="url(#wave-grad)" stroke-width="4" stroke-linecap="round" />
+                </svg>
+              </div>
+            </div>
             <div class="wave-controls">
               <button id="wave-toggle" class="btn btn--ghost" type="button">Pause animation</button>
             </div>
@@ -76,18 +83,42 @@
         <div class="container">
           <h2 id="how-title" class="reveal">How it works</h2>
           <div class="card-grid card-grid--3">
-            <div class="card reveal">
+            <div class="card card--photo reveal">
+              <img class="step-photo step-photo--conversation" src="images/conversation.jpg" srcset="images/conversation-800.jpg 800w, images/conversation-1200.jpg 1200w, images/conversation.jpg 1600w" sizes="(min-width: 1080px) 340px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1600" height="1066" loading="lazy" decoding="async" alt="Two people talking over coffee" />
               <h3><span class="step-num">1 · </span>A few safety questions</h3>
               <p>Anything that needs a professional is flagged first.</p>
             </div>
-            <div class="card reveal">
+            <div class="card card--photo reveal">
+              <img class="step-photo step-photo--earbuds" src="images/earbuds.jpg" srcset="images/earbuds-800.jpg 800w, images/earbuds-1200.jpg 1200w, images/earbuds.jpg 1600w" sizes="(min-width: 1080px) 340px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1600" height="1162" loading="lazy" decoding="async" alt="Hands holding earbuds and a phone" />
               <h3><span class="step-num">2 · </span>Check your earbuds and tune</h3>
               <p>A left/right check and a short tone check personalise your sound.</p>
             </div>
-            <div class="card reveal">
+            <div class="card card--photo reveal">
+              <img class="step-photo step-photo--listening" src="images/listening.jpg" srcset="images/listening-800.jpg 800w, images/listening-1200.jpg 1200w, images/listening.jpg 1600w" sizes="(min-width: 1080px) 340px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1600" height="2400" loading="lazy" decoding="async" alt="Someone putting in an earbud" />
               <h3><span class="step-num">3 · </span>Listen live</h3>
               <p>Conversations, TV and lectures, clearer, with an instant mute.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="moments" aria-labelledby="moments-title">
+        <div class="container">
+          <h2 id="moments-title" class="reveal">Made for everyday moments</h2>
+          <p class="lead reveal">From busy dinners to lecture rooms and walks outside.</p>
+          <div class="moments-grid">
+            <figure class="moment reveal">
+              <img src="images/place-cafe.jpg" srcset="images/place-cafe-800.jpg 800w, images/place-cafe-1200.jpg 1200w, images/place-cafe.jpg 1600w" sizes="(min-width: 1080px) 340px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1600" height="1067" loading="lazy" decoding="async" alt="Diners at a busy counter in a lamp-lit restaurant" />
+              <figcaption>Dinners and cafés</figcaption>
+            </figure>
+            <figure class="moment reveal">
+              <img src="images/lecture-or-tv.jpg" srcset="images/lecture-or-tv-800.jpg 800w, images/lecture-or-tv-1200.jpg 1200w, images/lecture-or-tv.jpg 1600w" sizes="(min-width: 1080px) 340px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1600" height="900" loading="lazy" decoding="async" alt="A lecturer speaking to students in a lecture room" />
+              <figcaption>Lectures and talks</figcaption>
+            </figure>
+            <figure class="moment reveal">
+              <img src="images/place-outdoors.jpg" srcset="images/place-outdoors-800.jpg 800w, images/place-outdoors-1200.jpg 1200w, images/place-outdoors.jpg 1600w" sizes="(min-width: 1080px) 340px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1600" height="1066" loading="lazy" decoding="async" alt="People walking along a tree-lined park path in autumn" />
+              <figcaption>Out and about</figcaption>
+            </figure>
           </div>
         </div>
       </section>
@@ -103,8 +134,18 @@
               <button type="button" role="radio" aria-checked="false" tabindex="-1" data-env="cafe">Café</button>
               <button type="button" role="radio" aria-checked="false" tabindex="-1" data-env="outdoors">Outdoors</button>
             </div>
-            <div id="env-chart" class="env-chart"></div>
-            <p id="env-desc" aria-live="polite">A quiet room. Your full personal profile.</p>
+            <div class="env-body">
+              <div id="env-photo" class="env-photo" data-env="quiet">
+                <img class="is-active" data-env="quiet" src="images/place-quiet.jpg" srcset="images/place-quiet-800.jpg 800w, images/place-quiet-1200.jpg 1200w, images/place-quiet.jpg 1600w" sizes="(min-width: 1080px) 480px, (min-width: 960px) 44vw, calc(100vw - 82px)" width="1600" height="1072" decoding="async" alt="A calm living room at night, lit by a single lamp" />
+                <img data-env="office" aria-hidden="true" src="images/place-office.jpg" srcset="images/place-office-800.jpg 800w, images/place-office-1200.jpg 1200w, images/place-office.jpg 1600w" sizes="(min-width: 1080px) 480px, (min-width: 960px) 44vw, calc(100vw - 82px)" width="1600" height="1067" loading="lazy" decoding="async" alt="People working at desks in an open-plan office" />
+                <img data-env="cafe" aria-hidden="true" src="images/place-cafe.jpg" srcset="images/place-cafe-800.jpg 800w, images/place-cafe-1200.jpg 1200w, images/place-cafe.jpg 1600w" sizes="(min-width: 1080px) 480px, (min-width: 960px) 44vw, calc(100vw - 82px)" width="1600" height="1067" loading="lazy" decoding="async" alt="Diners and cooks at a busy restaurant counter at night" />
+                <img data-env="outdoors" aria-hidden="true" src="images/place-outdoors.jpg" srcset="images/place-outdoors-800.jpg 800w, images/place-outdoors-1200.jpg 1200w, images/place-outdoors.jpg 1600w" sizes="(min-width: 1080px) 480px, (min-width: 960px) 44vw, calc(100vw - 82px)" width="1600" height="1066" loading="lazy" decoding="async" alt="People walking along a tree-lined park path in autumn" />
+              </div>
+              <div class="env-data">
+                <div id="env-chart" class="env-chart"></div>
+                <p id="env-desc" aria-live="polite">A quiet room. Your full personal profile.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -220,6 +261,7 @@
           <span>&copy; 2026 ClariHear</span>
           <a href="privacy.html">Privacy notice</a>
           <a href="mailto:shresthajain.iitb@gmail.com">shresthajain.iitb@gmail.com</a>
+          <a href="credits.html">Photography: Unsplash and Pexels contributors (credits)</a>
         </div>
       </div>
     </footer>

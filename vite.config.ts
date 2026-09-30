@@ -4,7 +4,7 @@ export default defineConfig({
   base: process.env.VITE_BASE ?? '/',
   build: {
     rollupOptions: {
-      input: {main: 'index.html', privacy: 'privacy.html'},
+      input: {main: 'index.html', privacy: 'privacy.html', credits: 'credits.html'},
     },
   },
 });

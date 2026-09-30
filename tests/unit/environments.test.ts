@@ -102,4 +102,30 @@ describe('environment picker', () => {
     expect(r[0].getAttribute('aria-checked')).toBe('true');
     expect(r.map(x => x.tabIndex)).toEqual([0, -1, -1, -1]);
   });
+
+  describe('place photos', () => {
+    const photos = () => [...document.querySelectorAll<HTMLImageElement>('#env-photo img[data-env]')];
+    const active = () => photos().filter(p => p.classList.contains('is-active')).map(p => p.dataset.env);
+
+    it('shows the quiet photo initially', () => {
+      expect(photos()).toHaveLength(4);
+      expect(document.getElementById('env-photo')!.dataset.env).toBe('quiet');
+      expect(active()).toEqual(['quiet']);
+      for (const p of photos()) expect(p.getAttribute('aria-hidden')).toBe(p.dataset.env === 'quiet' ? null : 'true');
+    });
+
+    it('selecting café marks only the café photo active', () => {
+      picker.querySelector<HTMLElement>('[data-env="cafe"]')!.click();
+      expect(document.getElementById('env-photo')!.dataset.env).toBe('cafe');
+      expect(active()).toEqual(['cafe']);
+      for (const p of photos()) expect(p.getAttribute('aria-hidden')).toBe(p.dataset.env === 'cafe' ? null : 'true');
+    });
+
+    it('follows keyboard selection', () => {
+      key(radios()[0], 'End');
+      expect(active()).toEqual(['outdoors']);
+      key(radios()[3], 'Home');
+      expect(active()).toEqual(['quiet']);
+    });
+  });
 });

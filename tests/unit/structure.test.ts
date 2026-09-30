@@ -1,4 +1,4 @@
-import {readFileSync} from 'node:fs';
+import {existsSync, readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {JSDOM} from 'jsdom';
 import {describe, expect, it} from 'vitest';
@@ -77,5 +77,98 @@ describe('index.html structure', () => {
 
   it('has reveal elements', () => {
     expect(doc.querySelectorAll('.reveal').length).toBeGreaterThan(0);
+  });
+
+  describe('photography', () => {
+    const imgs = [...doc.querySelectorAll('img')];
+    const hero = q('#hero img.hero-photo') as HTMLImageElement | null;
+    const EAGER = ['hero', 'place-quiet'];
+    const nameOf = (img: Element) => /images\/([a-z-]+?)(?:-\d+)?\.jpg/.exec(img.getAttribute('src') ?? '')?.[1];
+
+    it('has a hero photo that loads eagerly with high priority', () => {
+      expect(hero).not.toBeNull();
+      expect(hero!.getAttribute('src')).toBe('images/hero.jpg');
+      expect(hero!.getAttribute('srcset')).toContain('images/hero-800.jpg 800w');
+      expect(hero!.getAttribute('srcset')).toContain('images/hero.jpg 2400w');
+      expect(hero!.getAttribute('sizes')).toBeTruthy();
+      expect(hero!.getAttribute('width')).toBe('2400');
+      expect(hero!.getAttribute('height')).toBe('1600');
+      expect(hero!.getAttribute('fetchpriority')).toBe('high');
+      expect(hero!.getAttribute('alt')).toBe('People talking at a lamp-lit restaurant table');
+      expect(hero!.hasAttribute('loading')).toBe(false);
+    });
+
+    it('keeps the wave inside the hero photo card, h1 outside it', () => {
+      expect(q('#hero .hero-media svg#wave')).not.toBeNull();
+      expect(q('#hero .hero-media img.hero-photo')).not.toBeNull();
+      expect(q('#hero .hero-copy h1')).not.toBeNull();
+    });
+
+    it('gives every image alt, size, async decoding and lazy loading (bar the eager ones)', () => {
+      expect(imgs.length).toBeGreaterThanOrEqual(11);
+      for (const img of imgs) {
+        const src = img.getAttribute('src')!;
+        const alt = img.getAttribute('alt');
+        expect(alt, `${src} alt`).not.toBeNull();
+        if (img.getAttribute('aria-hidden') !== 'true') expect(alt!.trim(), `${src} alt`).not.toBe('');
+        expect(Number(img.getAttribute('width')), `${src} width`).toBeGreaterThan(0);
+        expect(Number(img.getAttribute('height')), `${src} height`).toBeGreaterThan(0);
+        expect(img.getAttribute('decoding'), `${src} decoding`).toBe('async');
+        if (EAGER.includes(nameOf(img)!)) expect(img.getAttribute('loading'), src).not.toBe('lazy');
+        else expect(img.getAttribute('loading'), `${src} loading`).toBe('lazy');
+        expect(img.getAttribute('srcset'), `${src} srcset`).toBeTruthy();
+      }
+    });
+
+    it('references only image files that exist in public/', () => {
+      const refs = imgs.flatMap(img => [
+        img.getAttribute('src')!,
+        ...(img.getAttribute('srcset') ?? '').split(',').map(c => c.trim().split(/\s+/)[0]).filter(Boolean),
+      ]);
+      for (const ref of new Set(refs)) {
+        expect(ref, ref).toMatch(/^images\//);
+        expect(existsSync(resolve(__dirname, '../../public', ref)), ref).toBe(true);
+      }
+    });
+
+    it('shows a photo per place, stacked in the picker card', () => {
+      const photos = [...doc.querySelectorAll('#places #env-photo img[data-env]')];
+      expect(photos.map(p => p.getAttribute('data-env'))).toEqual(['quiet', 'office', 'cafe', 'outdoors']);
+      expect(photos.map(nameOf)).toEqual(['place-quiet', 'place-office', 'place-cafe', 'place-outdoors']);
+    });
+
+    it('puts a photo on top of each How it works step', () => {
+      const cards = [...doc.querySelectorAll('#how .card')];
+      expect(cards).toHaveLength(3);
+      const first = cards.map(c => c.firstElementChild);
+      expect(first.map(el => el?.tagName)).toEqual(['IMG', 'IMG', 'IMG']);
+      expect(first.map(el => nameOf(el!))).toEqual(['conversation', 'earbuds', 'listening']);
+      expect(first.map(el => el!.getAttribute('alt'))).toEqual([
+        'Two people talking over coffee',
+        'Hands holding earbuds and a phone',
+        'Someone putting in an earbud',
+      ]);
+    });
+
+    it('adds an everyday-moments strip between How it works and Real places', () => {
+      const ids = [...doc.querySelectorAll('main > section')].map(s => s.id);
+      expect(ids.indexOf('moments')).toBe(ids.indexOf('how') + 1);
+      expect(ids.indexOf('places')).toBe(ids.indexOf('moments') + 1);
+      expect(q('#moments h2')?.textContent?.trim()).toBe('Made for everyday moments');
+      const cards = [...doc.querySelectorAll('#moments .moment')];
+      expect(cards.map(c => nameOf(c.querySelector('img')!))).toEqual(['place-cafe', 'lecture-or-tv', 'place-outdoors']);
+      expect(cards.map(c => c.querySelector('figcaption')?.textContent?.trim())).toEqual([
+        'Dinners and cafés',
+        'Lectures and talks',
+        'Out and about',
+      ]);
+      for (const c of cards) expect(c.classList.contains('reveal')).toBe(true);
+      expect(q('#moments')!.textContent!.toLowerCase()).not.toMatch(/\b(users?|customers?)\b/);
+    });
+
+    it('credits the photographers from the footer', () => {
+      const link = q('footer a[href="credits.html"]');
+      expect(link?.textContent?.trim()).toBe('Photography: Unsplash and Pexels contributors (credits)');
+    });
   });
 });

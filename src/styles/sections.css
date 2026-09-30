@@ -90,18 +90,86 @@ section {
   margin-top: 24px;
 }
 
+/* Hero photo card: text never sits on the raw photo; the wave runs across its foot. */
+.hero-layout {
+  display: grid;
+  gap: 40px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+}
+
+@media (min-width: 960px) {
+  .hero-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px;
+  }
+}
+
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid var(--c-glass-border);
+  background: var(--c-bg2);
+  aspect-ratio: 4 / 3;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 960px) {
+  .hero-card {
+    aspect-ratio: 5 / 6;
+  }
+}
+
+.hero-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(10, 15, 28, 0.15) 0%, rgba(10, 15, 28, 0) 35%, rgba(10, 15, 28, 0.55) 70%, rgba(5, 8, 16, 0.92) 100%),
+    rgba(10, 15, 28, 0.12);
+  pointer-events: none;
+}
+
+.hero-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 45% 50%;
+}
+
 .wave-wrap {
-  margin-top: 40px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: 0 16px 16px;
 }
 
 .wave-wrap svg {
   display: block;
   width: 100%;
-  height: auto;
+  height: 72px;
+}
+
+@media (min-width: 960px) {
+  .wave-wrap svg {
+    height: 96px;
+  }
 }
 
 .wave-controls {
-  margin-top: 8px;
+  margin-top: 12px;
+}
+
+/* Photos: slightly muted, with a navy wash, so they sit calmly in the dark theme. */
+.hero-photo,
+.step-photo,
+.moment img,
+.env-photo img {
+  filter: saturate(0.85) brightness(0.92);
 }
 
 /* Glass cards */
@@ -176,6 +244,83 @@ section {
   color: var(--c-primary);
 }
 
+/* How it works: photo on top of each step card, bleeding to the card edges. */
+.card--photo {
+  overflow: hidden;
+}
+
+.step-photo {
+  display: block;
+  width: calc(100% + 48px);
+  max-width: none;
+  margin: -24px -24px 20px;
+  aspect-ratio: 4 / 3;
+  height: auto;
+  object-fit: cover;
+  border-bottom: 1px solid var(--c-glass-border);
+}
+
+.step-photo--listening {
+  object-position: 50% 35%;
+}
+
+/* Everyday moments strip */
+.moments-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .moments-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.moment {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--c-glass-border);
+  background: var(--c-bg2);
+  aspect-ratio: 4 / 5;
+}
+
+@media (max-width: 719px) {
+  .moment {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+.moment img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.moment::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 15, 28, 0.1) 30%, rgba(5, 8, 16, 0.9) 100%);
+  pointer-events: none;
+}
+
+.moment figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: 20px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--c-text);
+  text-shadow: 0 1px 8px rgba(5, 8, 16, 0.8);
+}
+
 /* Places */
 .env-picker {
   display: flex;
@@ -200,6 +345,62 @@ section {
   border-color: var(--c-primary);
   color: var(--c-bg0);
   font-weight: 600;
+}
+
+/* Place photo beside the chart (stacked below 960px); crossfades on selection. */
+.env-body {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+}
+
+@media (min-width: 960px) {
+  .env-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+.env-photo {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--c-glass-border);
+  background: var(--c-bg2);
+  aspect-ratio: 3 / 2;
+}
+
+.env-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 15, 28, 0) 50%, rgba(10, 15, 28, 0.45) 100%), rgba(10, 15, 28, 0.1);
+  pointer-events: none;
+}
+
+.env-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
+
+.env-photo img.is-active {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .env-photo img {
+    transition: none;
+  }
+}
+
+.env-data > :last-child {
+  margin-bottom: 0;
 }
 
 /* Environment chart: bars hang from a 0 dB baseline (cuts go down, boosts go up).
@@ -463,6 +664,7 @@ details > p {
 
 .site-footer .footer-links {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 8px 20px;
 }
@@ -486,6 +688,19 @@ details > p {
 
 .prose li {
   margin-bottom: 6px;
+}
+
+.credits-list {
+  padding-left: 1.2em;
+}
+
+.credits-list li {
+  margin-bottom: 16px;
+  color: var(--c-text-secondary);
+}
+
+.credits-list strong {
+  color: var(--c-text);
 }
 
 .prose p,

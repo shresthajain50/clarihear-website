@@ -4,7 +4,7 @@ import {JSDOM} from 'jsdom';
 import {describe, expect, it} from 'vitest';
 
 const read = (f: string) => readFileSync(resolve(__dirname, '../../', f), 'utf8');
-const pages = {'index.html': read('index.html'), 'privacy.html': read('privacy.html')};
+const pages = {'index.html': read('index.html'), 'privacy.html': read('privacy.html'), 'credits.html': read('credits.html')};
 
 describe('no third-party fonts or scripts', () => {
   for (const [name, html] of Object.entries(pages)) {

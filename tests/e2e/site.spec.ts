@@ -17,11 +17,28 @@ test('pages make no third-party requests on load', async ({page}) => {
     const u = new URL(r.url());
     if (u.hostname !== 'localhost') external.push(r.url());
   });
-  for (const path of ['/', '/privacy.html']) {
+  for (const path of ['/', '/privacy.html', '/credits.html']) {
     await page.goto(path);
     await page.waitForLoadState('networkidle');
   }
   expect(external).toEqual([]);
+});
+
+test('hero photo loads from our own origin', async ({page}) => {
+  await page.goto('/');
+  const hero = page.locator('#hero img.hero-photo');
+  await expect(hero).toBeVisible();
+  await expect.poll(() => hero.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth)).toBeGreaterThan(0);
+  const src = await hero.evaluate((img: HTMLImageElement) => img.currentSrc);
+  expect(new URL(src).hostname).toBe('localhost');
+});
+
+test('place photo follows the picker', async ({page}) => {
+  await page.goto('/');
+  await page.locator('#env-picker [data-env="cafe"]').click();
+  await expect(page.locator('#env-photo img.is-active')).toHaveCount(1);
+  await expect(page.locator('#env-photo img[data-env="cafe"]')).toHaveClass(/is-active/);
+  await expect(page.locator('#env-photo img[data-env="cafe"]')).toHaveCSS('opacity', '1');
 });
 
 test('index loads with an h1', async ({page}) => {
@@ -30,7 +47,7 @@ test('index loads with an h1', async ({page}) => {
   await expect(page.locator('h1')).toBeVisible();
 });
 
-for (const path of ['/', '/privacy.html']) {
+for (const path of ['/', '/privacy.html', '/credits.html']) {
   test(`axe: zero violations on ${path}`, async ({page}) => {
     await page.goto(path);
     // Axe must see the settled page, not elements mid-fade: scroll every reveal into view first.
@@ -51,7 +68,7 @@ for (const path of ['/', '/privacy.html']) {
 
 test('no horizontal overflow on mobile', async ({page}, info) => {
   test.skip(info.project.name !== 'chromium-mobile');
-  for (const path of ['/', '/privacy.html']) {
+  for (const path of ['/', '/privacy.html', '/credits.html']) {
     await page.goto(path);
     await expect(page.locator('h1')).toBeVisible();
     const res = await page.evaluate(() => {

@@ -4,7 +4,11 @@ import {JSDOM} from 'jsdom';
 import {describe, expect, it} from 'vitest';
 
 const read = (f: string) => readFileSync(resolve(__dirname, '../../', f), 'utf8');
-const pages = {'index.html': new JSDOM(read('index.html')), 'privacy.html': new JSDOM(read('privacy.html'))};
+const pages = {
+  'index.html': new JSDOM(read('index.html')),
+  'privacy.html': new JSDOM(read('privacy.html')),
+  'credits.html': new JSDOM(read('credits.html')),
+};
 
 describe('platform copy', () => {
   const idx = pages['index.html'].window.document;

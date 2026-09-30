@@ -37,6 +37,9 @@ export function initEnvironmentPicker(root: HTMLElement): void {
   const radios = [...root.querySelectorAll<HTMLElement>('[role=radio]')];
   const chart = document.getElementById('env-chart');
   const desc = document.getElementById('env-desc');
+  // Stacked place photos: only the active one is visible (CSS crossfades opacity) and exposed to AT.
+  const photoPanel = document.getElementById('env-photo');
+  const photos = photoPanel ? [...photoPanel.querySelectorAll<HTMLElement>('img[data-env]')] : [];
 
   const cols: HTMLElement[] = [];
   const bars: HTMLElement[] = [];
@@ -95,6 +98,13 @@ export function initEnvironmentPicker(root: HTMLElement): void {
       chart.setAttribute('aria-label', `${env.label} profile, change by band: ${parts.join(', ')}`);
     }
     if (desc) desc.textContent = env.description;
+    if (photoPanel) photoPanel.dataset.env = id;
+    photos.forEach(p => {
+      const on = p.dataset.env === id;
+      p.classList.toggle('is-active', on);
+      if (on) p.removeAttribute('aria-hidden');
+      else p.setAttribute('aria-hidden', 'true');
+    });
     if (focus) radios[index].focus();
   };
 
