@@ -38,20 +38,21 @@ Vercel (Account Settings, then Login Connections), then run `npx vercel git conn
 `VITE_BASE=/clarihear-website/`, and publishes to
 https://shresthajain50.github.io/clarihear-website/
 
-## Sign-ups
+## Enabling sign-ups
 
-The form is always open and needs no API key. Submissions are posted to
-FormSubmit (https://formsubmit.co), which emails them to
-shresthajain.iitb@gmail.com.
+Until a key is added, the form shows "Sign-ups open very soon."
 
-One-time step: the very first submission makes FormSubmit send an activation
-email to shresthajain.iitb@gmail.com. Click "Activate Form" in that email once.
-Until then, submissions are not delivered and visitors see "Something went
-wrong. Please try again."
+1. Get a free access key at https://web3forms.com by entering
+   shresthajain.iitb@gmail.com. The key arrives by email.
+2. For Vercel, run `npx vercel env add VITE_WEB3FORMS_KEY production`, paste the key,
+   then run `npx vercel deploy --prod`.
+3. For the GitHub Pages mirror, go to Settings, then Secrets and variables, then
+   Actions, add a repository secret named `WEB3FORMS_KEY`, and re-run the
+   "Deploy to GitHub Pages" workflow.
 
 ## Privacy
 
-Sign-ups are emailed to the site owner through FormSubmit. See `privacy.html`.
+Sign-ups are emailed to the site owner through Web3Forms. See `privacy.html`.
 
 ## Scroll-world hero
 

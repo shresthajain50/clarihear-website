@@ -13,7 +13,7 @@ fitted extra-gently (lower gain) because earbuds aren't calibrated, and gain is
 capped (Level-2 ceiling 20 dB). The tone check is approximate and not a medical
 test. The site explains the product
 honestly, builds trust, and collects early-access sign-ups (name, email, phone,
-age) that are emailed to **shresthajain.iitb@gmail.com** via FormSubmit (formsubmit.co). It is
+age) that are emailed to **shresthajain.iitb@gmail.com** via Web3Forms. It is
 deliberately different from the app: no hearing features, no audio.
 
 Success: a visitor understands what ClariHear is and is not within one screen,
@@ -41,11 +41,9 @@ dependency: `libphonenumber-js` (phone validation). Tests: Vitest + jsdom
 `dist/`, deployed by GitHub Actions to GitHub Pages; Vite `base` set from
 `VITE_BASE` (default `/`, CI `/clarihear-website/`).
 
-Sign-up delivery: FormSubmit, no API key or build-time secret. The form is
-always open. The first submission sends a one-time activation email to
-shresthajain.iitb@gmail.com; the owner clicks "Activate Form" once. Before
-activation FormSubmit answers `success: "false"` and the visitor sees the
-generic retry message.
+Web3Forms access key: build-time `VITE_WEB3FORMS_KEY` (public-safe per
+Web3Forms docs). Without a key, the form shows: "Sign-ups open very soon." and
+does not submit.
 
 ## Design tokens (from the app, src/theme/index.ts)
 
@@ -68,7 +66,7 @@ system-ui fallback.
 8. FAQ (`#faq`, `<details>`): Is ClariHear a hearing aid? ("No. ClariHear is personalised hearing assistance on your phone: an app that tunes live sound to your hearing profile. It isn't a medical device."); When does it launch? (on iPhone and Android; early-access members hear first); Which earbuds work? (Most wired and Bluetooth earbuds); What happens to my sign-up details? (used only for launch and early-access updates; see privacy notice); How does ClariHear personalise sound? ("Your tone check (or audiogram) gives an approximate profile for each ear. ClariHear turns it into gentle, capped boosts at each frequency, then adjusts for your surroundings."); Is the tone check a medical test? ("No. It's a quick, approximate check to personalise your sound. It doesn't diagnose anything. If you're concerned about your hearing, see a hearing professional."); Is it free? ("We'll share pricing before launch.").
 9. Join (`#join`): form (below). 10. Footer: disclaimer ("ClariHear is a personalised hearing assistance app, not a medical device. For adults 18 and over. If you are concerned about your hearing, see a hearing professional.", same on every page), © 2026 ClariHear, Privacy notice, contact mailto:shresthajain.iitb@gmail.com.
 
-privacy.html: who we are ("ClariHear is a pre-launch personalised hearing assistance app for iPhone and Android.") + contact; data collected (name, email, phone, age) and why (launch and early-access updates only); processed by FormSubmit (formsubmit.co) and stored in the ClariHear inbox; kept until 12 months after launch, then deleted; never sold; rights (access, correct, erase, withdraw — email us); withdrawal as easy as consent; complaints (India: Data Protection Board; EU: your supervisory authority).
+privacy.html: who we are ("ClariHear is a pre-launch personalised hearing assistance app for iPhone and Android.") + contact; data collected (name, email, phone, age) and why (launch and early-access updates only); processed by Web3Forms and stored in the ClariHear inbox; kept until 12 months after launch, then deleted; never sold; rights (access, correct, erase, withdraw — email us); withdrawal as easy as consent; complaints (India: Data Protection Board; EU: your supervisory authority).
 
 ## Sign-up form
 
@@ -78,10 +76,10 @@ Order and fields (visible labels, hints below labels, errors in reserved space):
 - Phone — required, include country code; hint "Include country code, e.g. +91 98765 43210. Only for launch updates — we never call without asking."; default region IN when no "+"; valid per libphonenumber; normalised to E.164; `type=tel autocomplete=tel inputmode=tel`.
 - Age — required whole number 18–120; under 18: "ClariHear is for adults 18 and over."; `inputmode=numeric`.
 - Consent checkbox — required, unticked: "I agree that ClariHear may use my name, email, phone number and age to contact me about the launch and early access. I can withdraw anytime." + link to privacy notice.
-- Honeypot `botcheck` (hidden). When ticked, nothing is sent and the visitor sees the normal success message. No captcha (`_captcha: "false"`).
+- Honeypot `botcheck` (hidden); hCaptcha widget via Web3Forms script when a key is present.
 Behaviour: validate on blur; once invalid, re-validate on input; on submit validate all, focus the first invalid field; `aria-invalid` + `aria-describedby` to the error; button "Join early access" → "Joining…" disabled while sending; result in `aria-live="polite"` region. Success replaces the form: "You're on the list, {first name}. We'll email {email} when early access opens." Failure keeps entered data, shows a retry message.
 
-FormSubmit payload: `name, email, phone (E.164), age, consent "yes", _subject "New ClariHear early-access sign-up: {name}", _template "table", _captcha "false", _honey ""`. POST `https://formsubmit.co/ajax/shresthajain.iitb@gmail.com`, JSON + `Accept: application/json`; success if `json.success` is `true` or `"true"`; map 429 → "Too many sign-ups right now — please try again in a minute."; network error → "Couldn't reach the sign-up service. Check your connection and try again."; other → "Something went wrong. Please try again."
+Web3Forms payload: `access_key, subject "New ClariHear early-access sign-up: {name}", from_name "ClariHear website", name, email, phone (E.164), age, consent "yes", botcheck`. POST `https://api.web3forms.com/submit`, JSON + `Accept: application/json`; success only if `json.success === true`; map 429 → "Too many sign-ups right now — please try again in a minute."; network error → "Couldn't reach the sign-up service. Check your connection and try again."; other → "Something went wrong. Please try again."
 
 ## Motion & accessibility
 
@@ -89,4 +87,4 @@ Only transform/opacity animate; reveals 12px rise + fade, 300 ms ease-out; no sc
 
 ## Testing
 
-Vitest: validation rules, submit client (all response classes, mocked fetch), form controller (jsdom), environments data parity with the app, chart rendering, hearing-profile data and toggle, copy guard (no banned claim words in index.html/privacy.html). Playwright: full sign-up with mocked FormSubmit (success, 429, offline), honeypot sends nothing, errors + focus, mobile 375px no horizontal scroll, reduced motion, axe (no violations) on both pages.
+Vitest: validation rules, submit client (all response classes, mocked fetch), form controller (jsdom), environments data parity with the app, chart rendering, hearing-profile data and toggle, copy guard (no banned claim words in index.html/privacy.html). Playwright: full sign-up with mocked Web3Forms (success, 429, offline), errors + focus, no-key fallback, mobile 375px no horizontal scroll, reduced motion, axe (no violations) on both pages.
