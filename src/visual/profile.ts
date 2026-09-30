@@ -35,6 +35,19 @@ export function fmtBoost(n: number): string {
   return `${n > 0 ? '+' : '−'}${Math.abs(n).toFixed(1)} dB`;
 }
 
+/** Fired on the profile section before the value labels are written; cancel it to render them yourself. */
+export const BOOST_CHANGE_EVENT = 'profile:boostchange';
+export type BoostChangeDetail = {mode: BoostMode};
+
+/** Number on top, unit beneath, so labels fit narrow columns; textContent stays "+6.1 dB". */
+export function renderBoostValue(el: HTMLElement, gain: number): void {
+  const [num, unit] = fmtBoost(gain).split(' ');
+  const u = document.createElement('span');
+  u.className = 'u';
+  u.textContent = ` ${unit}`;
+  el.replaceChildren(num, u);
+}
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const el = (tag: string, attrs: Record<string, string | number> = {}, parent?: Element) => {
   const node = document.createElementNS(SVG_NS, tag);
@@ -136,14 +149,13 @@ export function initProfile(root: HTMLElement, opts: {reducedMotion?: boolean} =
       const clamped = Math.max(0, Math.min(BOOST_FULL_DB, g));
       bars[i].style.transform = `scaleY(${clamped / BOOST_FULL_DB})`;
       values[i].style.transform = `translateY(${-clamped * PX_PER_DB}px)`;
-      // Number on top, unit beneath, so labels fit narrow columns; textContent stays "+6.1 dB".
-      const [num, unit] = fmtBoost(g).split(' ');
-      const u = document.createElement('span');
-      u.className = 'u';
-      u.textContent = ` ${unit}`;
-      values[i].replaceChildren(num, u);
       cols[i].dataset.zero = String(g === 0);
     });
+    chart.dataset.mode = mode;
+    // Lets an enhancement (the count-up island) take over the value labels; if nobody
+    // claims them, they are written statically here.
+    const change = new CustomEvent<BoostChangeDetail>(BOOST_CHANGE_EVENT, {cancelable: true, detail: {mode}});
+    if (root.dispatchEvent(change)) gains.forEach((g, i) => renderBoostValue(values[i], g));
     const parts = BANDS.map((hz, i) => `${bandLabel(hz)} ${fmtBoost(gains[i])}`);
     chart.setAttribute('aria-label', `Example boosts for the left ear, ${MODE_LABEL[mode]}: ${parts.join(', ')}`);
   };

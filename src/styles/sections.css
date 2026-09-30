@@ -1258,3 +1258,13 @@ details > p {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* React Bits islands (added only when motion is allowed) */
+/* The sweep is driven by ShinyText's own motion value; drop the vendored CSS keyframes. */
+.eyebrow .shiny-text {
+  animation: none;
+}
+
+.blur-heading__words {
+  justify-content: inherit;
+}
