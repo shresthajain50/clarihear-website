@@ -82,8 +82,8 @@ describe('index.html structure', () => {
   describe('photography', () => {
     const imgs = [...doc.querySelectorAll('img')];
     const hero = q('#hero img.hero-photo') as HTMLImageElement | null;
-    const EAGER = ['hero', 'place-quiet'];
-    const nameOf = (img: Element) => /images\/([a-z-]+?)(?:-\d+)?\.jpg/.exec(img.getAttribute('src') ?? '')?.[1];
+    const EAGER = ['hero', 'app-cafe', 'place-quiet'];
+    const nameOf = (img: Element) => /images\/([a-z-]+?)(?:-\d+)?\.(?:jpg|png)/.exec(img.getAttribute('src') ?? '')?.[1];
 
     it('has a hero photo that loads eagerly with high priority', () => {
       expect(hero).not.toBeNull();
