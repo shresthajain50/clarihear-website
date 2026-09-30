@@ -37,6 +37,15 @@ describe('copy guard', () => {
     });
   }
 
+  it('professional card makes only the claim the app supports', () => {
+    const html = pages['index.html'];
+    expect(html).toContain("We'll tell you when to see a professional");
+    expect(html).toContain(
+      'If your safety answers suggest seeing a hearing professional, ClariHear tells you before you start.',
+    );
+    expect(html).not.toContain('If something needs expert attention');
+  });
+
   it('shows the contact email in the footer of both pages', () => {
     for (const html of Object.values(pages)) {
       const footer = /<footer[\s\S]*<\/footer>/i.exec(html)?.[0] ?? '';

@@ -29,7 +29,7 @@ describe('wavePath', () => {
 
 function setup() {
   document.body.innerHTML =
-    '<section id="hero"><svg id="wave"><path d="M0 0"/></svg><button id="t" aria-pressed="false">Pause animation</button></section>';
+    '<section id="hero"><svg id="wave"><path d="M0 0"/></svg><button id="t">Pause animation</button></section>';
   return {
     svg: document.getElementById('wave') as unknown as SVGSVGElement,
     btn: document.getElementById('t') as HTMLButtonElement,
@@ -39,6 +39,13 @@ function setup() {
 describe('initWave', () => {
   beforeEach(() => vi.unstubAllGlobals());
   afterEach(() => vi.unstubAllGlobals());
+
+  it('reduced motion hides the (useless) toggle', () => {
+    vi.stubGlobal('requestAnimationFrame', vi.fn());
+    const {svg, btn} = setup();
+    initWave(svg, btn, {reducedMotion: true}).destroy();
+    expect(btn.hidden).toBe(true);
+  });
 
   it('reduced motion draws once and never requests a frame', () => {
     const raf = vi.fn();
@@ -51,7 +58,7 @@ describe('initWave', () => {
     w.destroy();
   });
 
-  it('toggle switches aria-pressed and label, and loop stops/starts', () => {
+  it('toggle switches the visible label (no aria-pressed), and loop stops/starts', () => {
     const raf = vi.fn(() => 1);
     const caf = vi.fn();
     vi.stubGlobal('requestAnimationFrame', raf);
@@ -60,12 +67,12 @@ describe('initWave', () => {
     const w = initWave(svg, btn);
     expect(raf).toHaveBeenCalled();
     btn.click();
-    expect(btn.getAttribute('aria-pressed')).toBe('true');
+    expect(btn.hasAttribute('aria-pressed')).toBe(false);
     expect(btn.textContent).toBe('Play animation');
     expect(caf).toHaveBeenCalled();
     const n = raf.mock.calls.length;
     btn.click();
-    expect(btn.getAttribute('aria-pressed')).toBe('false');
+    expect(btn.hasAttribute('aria-pressed')).toBe(false);
     expect(btn.textContent).toBe('Pause animation');
     expect(raf.mock.calls.length).toBeGreaterThan(n);
     w.destroy();

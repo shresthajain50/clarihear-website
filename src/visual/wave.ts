@@ -32,6 +32,8 @@ export function initWave(
   const draw = (t: number, c: number) => path?.setAttribute('d', wavePath(t, c, 800, 160));
 
   if (opts.reducedMotion) {
+    // Nothing moves, so a pause/play control would do nothing.
+    toggle.hidden = true;
     draw(0, 1);
     return {destroy() {}};
   }
@@ -71,7 +73,6 @@ export function initWave(
 
   const onToggle = () => {
     userPaused = !userPaused;
-    toggle.setAttribute('aria-pressed', String(userPaused));
     toggle.textContent = userPaused ? 'Play animation' : 'Pause animation';
     if (userPaused) stop();
     else start();

@@ -18,6 +18,9 @@ describe('index.html structure', () => {
   it('has the hero hooks and static h1', () => {
     expect(q('#hero[data-scroll-world] svg#wave')).not.toBeNull();
     expect(q('#hero button#wave-toggle')).not.toBeNull();
+    // The visible label carries the state; no competing aria-pressed.
+    expect(q('#wave-toggle')!.hasAttribute('aria-pressed')).toBe(false);
+    expect(q('#wave-toggle')!.textContent!.trim()).toBe('Pause animation');
     expect(q('h1')?.textContent?.trim()).toBe('Hear the conversation again.');
   });
 
