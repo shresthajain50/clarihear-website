@@ -1,7 +1,8 @@
 import {test, expect, type Page} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const ENDPOINT = 'https://api.web3forms.com/submit';
+const ENDPOINT = 'https://formsubmit.co/ajax/**';
+const OK_BODY = JSON.stringify({success: 'true', message: 'The form was submitted successfully.'});
 
 async function fill(page: Page) {
   await page.locator('#name').fill('Asha Rao');
@@ -100,9 +101,11 @@ test('reduced motion: all reveals visible', async ({page}) => {
 
 test('sign-up success sends exactly one request', async ({page}) => {
   const bodies: any[] = [];
+  const urls: string[] = [];
   await page.route(ENDPOINT, async (route) => {
+    urls.push(route.request().url());
     bodies.push(JSON.parse(route.request().postData() ?? '{}'));
-    await route.fulfill({status: 200, contentType: 'application/json', body: JSON.stringify({success: true})});
+    await route.fulfill({status: 200, contentType: 'application/json', body: OK_BODY});
   });
   await page.goto('/');
   await fill(page);
@@ -113,13 +116,42 @@ test('sign-up success sends exactly one request', async ({page}) => {
     "You're on the list, Asha. We'll email asha@example.com when early access opens.",
   );
   expect(bodies).toHaveLength(1);
-  expect(bodies[0]).toMatchObject({
+  expect(urls).toEqual(['https://formsubmit.co/ajax/shresthajain.iitb@gmail.com']);
+  expect(bodies[0]).toEqual({
     name: 'Asha Rao',
     email: 'asha@example.com',
     phone: '+919876543210',
     age: 34,
     consent: 'yes',
+    _subject: 'New ClariHear early-access sign-up: Asha Rao',
+    _template: 'table',
+    _captcha: 'false',
+    _honey: '',
   });
+});
+
+test('sign-up form is open: no closed notice, fields enabled', async ({page}) => {
+  await page.goto('/');
+  await expect(page.locator('.signup-closed')).toHaveCount(0);
+  for (const input of await page.locator('#signup input:not(#botcheck)').all()) await expect(input).toBeEnabled();
+  await expect(page.locator('#signup-submit')).toBeVisible();
+});
+
+test('honeypot checked: nothing is sent, visitor sees success', async ({page}) => {
+  let hits = 0;
+  await page.route(ENDPOINT, (r) => {
+    hits++;
+    return r.fulfill({status: 200, contentType: 'application/json', body: OK_BODY});
+  });
+  await page.goto('/');
+  await fill(page);
+  await page.locator('#botcheck').evaluate((el: HTMLInputElement) => (el.checked = true));
+  await page.locator('#signup-submit').click();
+  await expect(page.locator('#signup-status')).toHaveText(
+    "You're on the list, Asha. We'll email asha@example.com when early access opens.",
+  );
+  await page.waitForTimeout(300);
+  expect(hits).toBe(0);
 });
 
 test('429 shows rate-limit message and keeps values', async ({page}) => {

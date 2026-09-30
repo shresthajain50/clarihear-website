@@ -27,20 +27,14 @@ jobs:
       - run: npm test
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
-      - name: End-to-end tests (builds dist with a test key, and dist-nokey with an empty key)
+      - name: End-to-end tests
         run: npm run e2e
       - name: Production build (overwrites the e2e build in dist)
         run: npm run build
         env:
           VITE_BASE: /clarihear-website/
-          VITE_WEB3FORMS_KEY: ${{ secrets.WEB3FORMS_KEY }}
-      - name: Verify dist is the production build
-        run: |
-          if grep -rq "test-key" dist/index.html dist/assets; then
-            echo "dist contains the e2e test key; refusing to deploy" >&2
-            exit 1
-          fi
-          grep -q "/clarihear-website/" dist/index.html
+      - name: Verify dist is built for the Pages base path
+        run: grep -q "/clarihear-website/" dist/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -7,10 +7,9 @@ import {initEnvironmentPicker} from './visual/environments';
 import {initReveal} from './visual/reveal';
 import {initProfile} from './visual/profile';
 
-const accessKey = import.meta.env.VITE_WEB3FORMS_KEY;
 const signupForm = document.getElementById('signup');
 if (signupForm instanceof HTMLFormElement) {
-  initSignupForm(signupForm, {accessKey});
+  initSignupForm(signupForm);
 }
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

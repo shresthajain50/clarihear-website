@@ -1236,25 +1236,3 @@ details > p {
 .prose li {
   overflow-wrap: anywhere;
 }
-
-/* Sign-ups not yet open (no access key configured) */
-.signup-closed {
-  background: var(--c-glass);
-  border: 1px solid var(--c-glass-border);
-  border-left: 4px solid var(--c-primary);
-  border-radius: 12px;
-  padding: 14px 16px;
-  margin: 0 0 20px;
-  color: var(--c-text);
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-
-.signup-closed a {
-  color: var(--c-primary);
-}
-
-#signup input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}

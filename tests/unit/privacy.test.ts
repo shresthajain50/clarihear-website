@@ -20,9 +20,9 @@ describe('no third-party fonts or scripts', () => {
     );
   });
 
-  it('main.ts does not load the Web3Forms/hCaptcha client script', () => {
+  it('main.ts loads no third-party client script and needs no API key', () => {
     const main = read('src/main.ts');
-    expect(main).not.toContain('web3forms.com/client');
+    expect(main).not.toMatch(/VITE_\w*KEY/);
     expect(main).not.toMatch(/createElement\(['"]script['"]\)/);
   });
 });
@@ -31,8 +31,9 @@ describe('privacy notice is truthful about processors', () => {
   const doc = new JSDOM(pages['privacy.html']).window.document;
   const text = doc.querySelector('main')!.textContent!.replace(/\s+/g, ' ');
 
-  it('names Web3Forms, the Gmail inbox and GitHub Pages', () => {
-    expect(text).toContain('Web3Forms');
+  it('names FormSubmit, the Gmail inbox and GitHub Pages', () => {
+    expect(text).toContain('FormSubmit (formsubmit.co), a form-to-email service');
+    expect(text).toMatch(/contacts FormSubmit only when you submit the form/);
     expect(text).toMatch(/form-to-email service/);
     expect(text).toMatch(/Google Gmail account/);
     expect(text).toContain('GitHub Pages');
@@ -58,4 +59,15 @@ describe('privacy notice is truthful about processors', () => {
     expect(text).toContain('Data Protection Board');
     expect(text).toContain('shresthajain.iitb@gmail.com');
   });
+});
+
+describe('no leftover Web3Forms references', () => {
+  const files = ['index.html', 'privacy.html', 'src/main.ts', 'src/vite-env.d.ts', 'src/signup/submit.ts',
+    'src/signup/form.ts', 'src/signup/validation.ts', 'tests/e2e/site.spec.ts', 'playwright.config.ts',
+    '.env.example', 'README.md', '.github/workflows/deploy.yml'];
+  for (const f of files) {
+    it(`${f} does not mention web3forms`, () => {
+      expect(read(f).toLowerCase()).not.toContain('web3forms');
+    });
+  }
 });

@@ -35,7 +35,7 @@ beforeEach(() => {
 
 describe('form controller', () => {
   it('blur on emptied name shows error and aria-invalid; typing valid clears it', () => {
-    initSignupForm(form, {accessKey: 'k', submit: vi.fn()});
+    initSignupForm(form, {submit: vi.fn()});
     type('name', 'x');
     type('name', '');
     blur('name');
@@ -47,14 +47,14 @@ describe('form controller', () => {
   });
 
   it('does not flag an untouched empty field on blur', () => {
-    initSignupForm(form, {accessKey: 'k', submit: vi.fn()});
+    initSignupForm(form, {submit: vi.fn()});
     blur('name');
     expect($('name-error').textContent).toBe('');
     expect($('name').hasAttribute('aria-invalid')).toBe(false);
   });
 
   it('keeps hint ids in aria-describedby', () => {
-    initSignupForm(form, {accessKey: 'k', submit: vi.fn()});
+    initSignupForm(form, {submit: vi.fn()});
     type('phone', 'x');
     blur('phone');
     expect($('phone').getAttribute('aria-describedby')).toBe('phone-hint phone-error');
@@ -62,7 +62,7 @@ describe('form controller', () => {
 
   it('submit with errors shows all, focuses first invalid, does not submit', () => {
     const submit = vi.fn();
-    initSignupForm(form, {accessKey: 'k', submit});
+    initSignupForm(form, {submit});
     type('name', 'Zoë Carter');
     submitEvent();
     expect(submit).not.toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe('form controller', () => {
   it('valid submit disables button, calls submit once even when submitted twice', async () => {
     let resolve!: (v: {ok: true}) => void;
     const submit = vi.fn(() => new Promise<{ok: true}>(r => (resolve = r)));
-    initSignupForm(form, {accessKey: 'k', submit: submit as never});
+    initSignupForm(form, {submit: submit as never});
     fillValid();
     submitEvent();
     submitEvent();
@@ -85,7 +85,7 @@ describe('form controller', () => {
     expect(btn.textContent).toBe('Joining…');
     const args = submit.mock.calls[0] as unknown as [Record<string, unknown>, Record<string, unknown>];
     expect(args[0]).toMatchObject({name: 'Zoë Carter', email: 'zoe@example.com', phone: '+919876543210', age: 34});
-    expect(args[1]).toMatchObject({accessKey: 'k', botcheck: false});
+    expect(args[1]).toEqual({honeypot: false});
     resolve({ok: true});
     await flush();
     expect(submit).toHaveBeenCalledTimes(1);
@@ -93,7 +93,7 @@ describe('form controller', () => {
 
   it('passes honeypot state and never reads or sends an hCaptcha token', async () => {
     const submit = vi.fn(async () => ({ok: true as const}));
-    initSignupForm(form, {accessKey: 'k', submit});
+    initSignupForm(form, {submit});
     const ta = document.createElement('textarea');
     ta.name = 'h-captcha-response';
     ta.value = 'tok';
@@ -102,12 +102,12 @@ describe('form controller', () => {
     fillValid();
     submitEvent();
     const opts = (submit.mock.calls[0] as unknown[])[1] as Record<string, unknown>;
-    expect(opts).toMatchObject({botcheck: true});
+    expect(opts).toEqual({honeypot: true});
     expect('hcaptchaToken' in opts).toBe(false);
   });
 
   it('success shows first-name message, hides form, focuses status', async () => {
-    initSignupForm(form, {accessKey: 'k', submit: async () => ({ok: true})});
+    initSignupForm(form, {submit: async () => ({ok: true})});
     fillValid();
     submitEvent();
     await flush();
@@ -119,7 +119,6 @@ describe('form controller', () => {
 
   it('failure shows message, re-enables button, keeps values', async () => {
     initSignupForm(form, {
-      accessKey: 'k',
       submit: async () => ({ok: false, reason: 'network', message: 'Nope, retry.'}) as never,
     });
     fillValid();
@@ -133,28 +132,22 @@ describe('form controller', () => {
     expect(form.hidden).toBe(false);
   });
 
-  it.each([undefined, '', '   '])('no key (%j): notice on top, inputs disabled, no button, never submits', async key => {
-    const submit = vi.fn();
-    initSignupForm(form, {accessKey: key, submit});
-    const notice = form.querySelector<HTMLElement>('.signup-closed')!;
-    expect(notice).not.toBeNull();
-    expect(notice.textContent).toBe(
-      'Sign-ups open very soon. Want a heads-up? Email us at shresthajain.iitb@gmail.com.',
-    );
-    const link = notice.querySelector('a')!;
-    expect(link.getAttribute('href')).toBe('mailto:shresthajain.iitb@gmail.com');
-    expect(link.textContent).toBe('shresthajain.iitb@gmail.com');
-    // Above the fields.
-    const firstField = form.querySelector('.field')!;
-    expect(notice.compareDocumentPosition(firstField) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    const inputs = [...form.querySelectorAll('input')];
-    expect(inputs.length).toBeGreaterThanOrEqual(6);
-    for (const i of inputs) expect(i.disabled, i.id).toBe(true);
-    const btn = document.getElementById('signup-submit') as HTMLButtonElement | null;
-    expect(btn === null || btn.hidden).toBe(true);
+  it('is always open: no closed notice, inputs and button enabled', async () => {
+    const submit = vi.fn(async () => ({ok: true as const}));
+    initSignupForm(form, {submit});
+    expect(form.querySelector('.signup-closed')).toBeNull();
+    expect(form.textContent).not.toContain('Sign-ups open very soon');
+    for (const i of form.querySelectorAll('input')) expect(i.disabled, i.id).toBe(false);
+    const btn = $<HTMLButtonElement>('signup-submit');
+    expect(btn.disabled).toBe(false);
+    expect(btn.hidden).toBe(false);
     fillValid();
     submitEvent();
     await flush();
-    expect(submit).not.toHaveBeenCalled();
+    expect(submit).toHaveBeenCalledTimes(1);
+  });
+
+  it('works with no options at all (default submit is wired)', () => {
+    expect(() => initSignupForm(form)).not.toThrow();
   });
 });
