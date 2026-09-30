@@ -56,6 +56,8 @@ const TO = [
 /**
  * The heading keeps its element and id; its accessible name comes from the visually hidden
  * original text, and the animated words are aria-hidden, so it is read exactly once.
+ * Note: h2.textContent therefore contains the text twice (hidden copy + animated words); read
+ * the accessible name (or the .visually-hidden span), never the raw textContent, for the copy.
  */
 function Heading({text}: {text: string}) {
   return (
@@ -85,6 +87,8 @@ export function enhanceHeadings(root: ParentNode, opts: Opts): Array<() => void>
   for (const h2 of root.querySelectorAll<HTMLElement>('main section h2')) {
     // Only plain-text headings: anything with markup inside stays exactly as authored.
     if (h2.children.length) continue;
+    // Already faded in by initReveal before this lazily loaded island arrived: don't animate it twice.
+    if (h2.hasAttribute('data-revealed')) continue;
     const text = h2.textContent?.replace(/\s+/g, ' ').trim();
     if (!text) continue;
     try {

@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import {describe, it, expect, beforeEach, vi} from 'vitest';
-import {act, waitFor} from '@testing-library/react';
+import {waitFor} from '@testing-library/react';
+// Islands run on preact/compat: its act flushes preact's effects (RTL's act targets React).
+import {act} from 'preact/test-utils';
 import {initProfile, EXAMPLE_BOOSTS, fmtBoost} from '../../../src/visual/profile';
 import {enhanceProfileCounts} from '../../../src/islands/profile';
 import {indexBody, stubManualIntersectionObserver, stubVisibleIntersectionObserver} from './helpers';

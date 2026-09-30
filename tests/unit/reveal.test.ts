@@ -42,6 +42,15 @@ describe('initReveal', () => {
     expect(document.getElementById('b')!.classList.contains('reveal--pending')).toBe(true);
   });
 
+  it('marks revealed elements so later enhancements do not animate them twice', () => {
+    initReveal(document);
+    const a = document.getElementById('a')!;
+    expect(a.hasAttribute('data-revealed')).toBe(false);
+    callback([{isIntersecting: true, target: a} as unknown as IntersectionObserverEntry], {} as IntersectionObserver);
+    expect(a.hasAttribute('data-revealed')).toBe(true);
+    expect(document.getElementById('b')!.hasAttribute('data-revealed')).toBe(false);
+  });
+
   it('leaves content visible without IntersectionObserver', () => {
     vi.stubGlobal('IntersectionObserver', undefined);
     initReveal(document);

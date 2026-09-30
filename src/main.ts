@@ -6,8 +6,6 @@ import {initWave} from './visual/wave';
 import {initEnvironmentPicker} from './visual/environments';
 import {initReveal} from './visual/reveal';
 import {initProfile} from './visual/profile';
-import {enhanceEyebrow, enhanceHeadings} from './islands/text';
-import {enhanceProfileCounts} from './islands/profile';
 
 const accessKey = import.meta.env.VITE_WEB3FORMS_KEY;
 const signupForm = document.getElementById('signup');
@@ -29,19 +27,21 @@ if (envPicker) initEnvironmentPicker(envPicker);
 const profile = document.getElementById('profile');
 if (profile) initProfile(profile, {reducedMotion});
 
-// React Bits islands enhance HTML that is already complete; any failure leaves it as authored.
-const enhance = (fn: () => unknown) => {
-  try {
-    fn();
-  } catch {
-    // Silent by design: the static page is the fallback.
-  }
-};
-if (!reducedMotion) {
-  const eyebrow = document.querySelector('#hero .eyebrow');
-  if (eyebrow) enhance(() => enhanceEyebrow(eyebrow, {reducedMotion}));
-  enhance(() => enhanceHeadings(document, {reducedMotion}));
-  if (profile) enhance(() => enhanceProfileCounts(profile, {reducedMotion}));
-}
-
 initReveal(document, {reducedMotion});
+
+// React Bits islands: loaded after first paint so the critical path stays the plain HTML + this file.
+// Reduced motion → never loaded. Any failure (load or mount) leaves the page as authored.
+if (!reducedMotion) {
+  const load = () => {
+    const done = (state: string) => (document.documentElement.dataset.islands = state);
+    import('./islands/index')
+      .then(m => {
+        m.enhanceAll(document, {reducedMotion});
+        done('ready');
+      })
+      .catch(() => done('failed'));
+  };
+  const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(load, {timeout: 2000}) : setTimeout(load, 200));
+  if (document.readyState === 'complete') idle();
+  else window.addEventListener('load', idle, {once: true});
+}

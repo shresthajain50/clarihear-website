@@ -57,6 +57,9 @@ function BoostValue({index, store, duration}: {index: number; store: ModeStore; 
   const ref = useRef<HTMLSpanElement>(null);
   // Until the chart is seen, the labels are the real values (never a stale zero off screen).
   const seen = useInView(ref, {once: true});
+  // Intentionally impure render: the refs below are read and written during render so the start
+  // value is decided in the same pass as the new target (a toggle mid-count continues from the
+  // number on screen). It is idempotent for a given (seen, to), so a repeated render is harmless.
   const lastTo = useRef<number | null>(null);
   const from = useRef(0); // first view counts up from zero
   if (!seen) {

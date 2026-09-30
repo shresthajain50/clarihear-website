@@ -81,6 +81,15 @@ describe('enhanceHeadings', () => {
     await waitFor(() => expect(Number(firstWord.style.opacity)).toBe(1), {timeout: 4000});
   });
 
+  it('leaves a heading that has already been revealed as authored (islands load after first paint)', () => {
+    const h2 = document.getElementById('how-title')!;
+    h2.setAttribute('data-revealed', '');
+    const before = h2.outerHTML;
+    enhanceHeadings(document, {reducedMotion: false});
+    expect(h2.outerHTML).toBe(before);
+    expect(document.querySelector('#profile-title [aria-hidden="true"]')).not.toBeNull();
+  });
+
   it('unmount restores the original heading', () => {
     const before = document.getElementById('how-title')!.outerHTML;
     const unmounts = enhanceHeadings(document, {reducedMotion: false});

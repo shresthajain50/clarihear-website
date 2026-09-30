@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import {describe, it, expect, beforeEach, vi, afterEach} from 'vitest';
+import {useEffect, useState} from 'react';
 import {mountIsland} from '../../../src/islands/mount';
 
 const ORIGINAL = '<span class="orig">Original <b>content</b></span>';
@@ -48,5 +49,25 @@ describe('mountIsland', () => {
     expect(onFail).toHaveBeenCalledTimes(1);
     expect(error).not.toHaveBeenCalled();
     expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('restores the original HTML when the island throws later (after an update), silently', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const onFail = vi.fn();
+    function Later() {
+      const [n, setN] = useState(0);
+      useEffect(() => {
+        const t = setTimeout(() => setN(1), 0);
+        return () => clearTimeout(t);
+      }, []);
+      if (n) throw new Error('late failure');
+      return <em className="island">ok</em>;
+    }
+    mountIsland(host, <Later />, {reducedMotion: false, onFail});
+    expect(host.querySelector('em.island')).not.toBeNull();
+    await new Promise(r => setTimeout(r, 60));
+    expect(host.innerHTML).toBe(ORIGINAL);
+    expect(onFail).toHaveBeenCalledTimes(1);
+    expect(error).not.toHaveBeenCalled();
   });
 });

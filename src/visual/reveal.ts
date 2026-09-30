@@ -7,6 +7,8 @@ export function initReveal(root: ParentNode, opts: {reducedMotion?: boolean} = {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         entry.target.classList.remove('reveal--pending');
+        // Islands load after first paint; this tells them not to animate the element a second time.
+        entry.target.setAttribute('data-revealed', '');
         io.unobserve(entry.target);
       }
     },

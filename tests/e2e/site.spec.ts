@@ -50,6 +50,8 @@ test('index loads with an h1', async ({page}) => {
 for (const path of ['/', '/privacy.html', '/credits.html']) {
   test(`axe: zero violations on ${path}`, async ({page}) => {
     await page.goto(path);
+    // Islands load after first paint and change heading classes; let them land first.
+    if (path === '/') await page.waitForSelector('html[data-islands]', {state: 'attached'});
     // Axe must see the settled page, not elements mid-fade: scroll every reveal into view first.
     for (const el of await page.locator('.reveal').all()) {
       await el.scrollIntoViewIfNeeded();
