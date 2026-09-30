@@ -77,4 +77,58 @@ describe('initWave', () => {
     expect(raf.mock.calls.length).toBeGreaterThan(n);
     w.destroy();
   });
+
+  it('pauses the loop while the hero is off-screen (IntersectionObserver)', () => {
+    let cb!: (entries: Array<{isIntersecting: boolean}>) => void;
+    const observe = vi.fn();
+    const disconnect = vi.fn();
+    class IO {
+      constructor(c: typeof cb) {
+        cb = c;
+      }
+      observe = observe;
+      disconnect = disconnect;
+      unobserve() {}
+    }
+    vi.stubGlobal('IntersectionObserver', IO);
+    const raf = vi.fn(() => 1);
+    const caf = vi.fn();
+    vi.stubGlobal('requestAnimationFrame', raf);
+    vi.stubGlobal('cancelAnimationFrame', caf);
+    const {svg, btn} = setup();
+    const w = initWave(svg, btn);
+    expect(observe).toHaveBeenCalledWith(document.getElementById('hero'));
+    expect(raf).toHaveBeenCalledTimes(1);
+
+    cb([{isIntersecting: false}]);
+    expect(caf).toHaveBeenCalled();
+    // Coming back while paused by the user must not restart it.
+    btn.click();
+    cb([{isIntersecting: true}]);
+    expect(raf).toHaveBeenCalledTimes(1);
+    btn.click();
+    expect(raf).toHaveBeenCalledTimes(2);
+
+    // Off-screen then back on resumes.
+    cb([{isIntersecting: false}]);
+    btn.click();
+    btn.click(); // user play while off-screen: stays stopped
+    expect(raf).toHaveBeenCalledTimes(2);
+    cb([{isIntersecting: true}]);
+    expect(raf).toHaveBeenCalledTimes(3);
+
+    w.destroy();
+    expect(disconnect).toHaveBeenCalled();
+  });
+
+  it('runs without IntersectionObserver', () => {
+    vi.stubGlobal('IntersectionObserver', undefined);
+    const raf = vi.fn(() => 1);
+    vi.stubGlobal('requestAnimationFrame', raf);
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    const {svg, btn} = setup();
+    const w = initWave(svg, btn);
+    expect(raf).toHaveBeenCalledTimes(1);
+    w.destroy();
+  });
 });

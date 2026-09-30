@@ -41,6 +41,7 @@ export function initWave(
   let raf = 0;
   let running = false;
   let userPaused = false;
+  let onScreen = true;
   let t = 0;
   let last = 0;
   let clarity = 0;
@@ -61,7 +62,7 @@ export function initWave(
     raf = requestAnimationFrame(frame);
   };
   const start = () => {
-    if (running || userPaused || document.hidden) return;
+    if (running || userPaused || !onScreen || document.hidden) return;
     running = true;
     last = 0;
     raf = requestAnimationFrame(frame);
@@ -83,6 +84,19 @@ export function initWave(
     if (r.width > 0) pointer = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
   };
 
+  // Save CPU: no frames while the hero is scrolled out of view.
+  const io =
+    typeof IntersectionObserver === 'function'
+      ? new IntersectionObserver(entries => {
+          const entry = entries[entries.length - 1];
+          if (!entry) return;
+          onScreen = entry.isIntersecting;
+          if (onScreen) start();
+          else stop();
+        })
+      : null;
+  io?.observe(hero);
+
   toggle.addEventListener('click', onToggle);
   document.addEventListener('visibilitychange', onVisibility);
   hero.addEventListener('pointermove', onPointer as EventListener);
@@ -93,6 +107,7 @@ export function initWave(
   return {
     destroy() {
       stop();
+      io?.disconnect();
       toggle.removeEventListener('click', onToggle);
       document.removeEventListener('visibilitychange', onVisibility);
       hero.removeEventListener('pointermove', onPointer as EventListener);
