@@ -4,5 +4,6 @@ dist
 test-results
 playwright-report
 .superpowers
+dist-nokey
 .vercel
 .env*

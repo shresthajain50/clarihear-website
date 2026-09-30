@@ -1,7 +1,6 @@
 import type {CleanSignup} from './validation';
 
-/** FormSubmit AJAX endpoint: emails each submission to the owner's inbox, no API key. */
-export const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/shresthajain.iitb@gmail.com';
+export const WEB3FORMS_URL = 'https://api.web3forms.com/submit';
 
 export type SubmitResult =
   | {ok: true}
@@ -18,27 +17,27 @@ const fail = (reason: keyof typeof MSG): SubmitResult => ({ok: false, reason, me
 
 export async function submitSignup(
   data: CleanSignup,
-  opts: {honeypot?: boolean; fetchImpl?: typeof fetch} = {},
+  opts: {accessKey: string; botcheck?: boolean; hcaptchaToken?: string; fetchImpl?: typeof fetch},
 ): Promise<SubmitResult> {
-  // A bot ticked the hidden honeypot: pretend it worked, send nothing.
-  if (opts.honeypot) return {ok: true};
-
   const doFetch = opts.fetchImpl ?? globalThis.fetch;
-  const payload = {
+  const payload: Record<string, unknown> = {
+    access_key: opts.accessKey,
+    subject: `New ClariHear early-access sign-up: ${data.name}`,
+    from_name: 'ClariHear website',
     name: data.name,
     email: data.email,
     phone: data.phone,
     age: data.age,
     consent: 'yes',
-    _subject: `New ClariHear early-access sign-up: ${data.name}`,
-    _template: 'table',
-    _captcha: 'false',
-    _honey: '',
+    botcheck: opts.botcheck ?? false,
   };
+  if (typeof opts.hcaptchaToken === 'string' && opts.hcaptchaToken !== '') {
+    payload['h-captcha-response'] = opts.hcaptchaToken;
+  }
 
   let res: Response;
   try {
-    res = await doFetch(FORMSUBMIT_URL, {
+    res = await doFetch(WEB3FORMS_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json', Accept: 'application/json'},
       body: JSON.stringify(payload),
@@ -53,8 +52,6 @@ export async function submitSignup(
   } catch {
     return fail('server');
   }
-  // FormSubmit answers {"success":"true"} (a string); accept a boolean too.
-  const success = (json as {success?: unknown} | null)?.success;
-  if (success === true || success === 'true') return {ok: true};
+  if ((json as {success?: unknown} | null)?.success === true) return {ok: true};
   return fail(res.status >= 500 ? 'server' : 'rejected');
 }

@@ -3,16 +3,43 @@ import {submitSignup} from './submit';
 
 const FIELDS: Field[] = ['name', 'email', 'phone', 'age', 'consent'];
 const BUTTON_TEXT = 'Join early access';
+const CONTACT_EMAIL = 'shresthajain.iitb@gmail.com';
+
+/** No access key: show an honest notice and make the form visibly inert. */
+function closeSignups(form: HTMLFormElement, button: HTMLButtonElement | null): void {
+  const doc = form.ownerDocument;
+  const closed = doc.createElement('p');
+  closed.className = 'signup-closed';
+  const link = doc.createElement('a');
+  link.href = `mailto:${CONTACT_EMAIL}`;
+  link.textContent = CONTACT_EMAIL;
+  closed.append('Sign-ups open very soon. Want a heads-up? Email us at ', link, '.');
+  form.prepend(closed);
+  for (const input of form.querySelectorAll<HTMLInputElement>('input')) input.disabled = true;
+  if (button) {
+    button.disabled = true;
+    button.hidden = true;
+  }
+  // Never submit without a key, even on programmatic/Enter submits.
+  form.addEventListener('submit', e => e.preventDefault());
+}
 
 export interface FormOptions {
+  accessKey: string | undefined;
   submit?: typeof submitSignup;
 }
 
-export function initSignupForm(form: HTMLFormElement, opts: FormOptions = {}): void {
+export function initSignupForm(form: HTMLFormElement, opts: FormOptions): void {
   const doc = form.ownerDocument;
   const status = doc.getElementById('signup-status');
   const button = form.querySelector<HTMLButtonElement>('#signup-submit');
+  const accessKey = (opts.accessKey ?? '').trim();
   const submit = opts.submit ?? submitSignup;
+
+  if (!accessKey) {
+    closeSignups(form, button);
+    return;
+  }
 
   const el = (f: Field) => form.querySelector<HTMLInputElement>(`#${f}`)!;
   const errEl = (f: Field) => doc.getElementById(`${f}-error`);
@@ -78,10 +105,10 @@ export function initSignupForm(form: HTMLFormElement, opts: FormOptions = {}): v
     }
     if (status) status.textContent = '';
 
-    const honeypot = form.querySelector<HTMLInputElement>('#botcheck')?.checked ?? false;
+    const botcheck = form.querySelector<HTMLInputElement>('#botcheck')?.checked ?? false;
     const data = result.value;
 
-    void submit(data, {honeypot})
+    void submit(data, {accessKey, botcheck})
       .then(res => {
         if (res.ok) {
           const first = data.name.split(/\s+/)[0];
