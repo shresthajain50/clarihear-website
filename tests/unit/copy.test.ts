@@ -114,3 +114,33 @@ describe('hearing-assistance positioning', () => {
     expect(doc.querySelector('#places .lead')!.textContent!.trim()).toBe('Your profile, adjusted for where you are.');
   });
 });
+
+describe('never positioned as only an amplifier', () => {
+  const FOOTER =
+    'ClariHear is a personalised hearing assistance app, not a medical device. For adults 18 and over. If you are concerned about your hearing, see a hearing professional.';
+
+  for (const [name, html] of Object.entries(pages)) {
+    it(`${name} never says "sound amplifier"`, () => {
+      expect(html.toLowerCase()).not.toMatch(/sound[- ]amplifier/);
+    });
+
+    it(`${name} footer leads with personalised hearing assistance`, () => {
+      const d = new JSDOM(html).window.document;
+      expect(d.querySelector('footer p')!.textContent!.replace(/\s+/g, ' ').trim()).toBe(FOOTER);
+    });
+  }
+
+  it('README never says "sound amplifier"', () => {
+    expect(read('README.md').toLowerCase()).not.toMatch(/sound[- ]amplifier/);
+  });
+
+  it('answers the hearing-aid FAQ as personalised hearing assistance', () => {
+    const d = new JSDOM(pages['index.html']).window.document;
+    const faq = [...d.querySelectorAll('#faq details')].find(
+      x => x.querySelector('summary')?.textContent?.trim() === 'Is ClariHear a hearing aid?',
+    );
+    expect(faq!.querySelector('p')!.textContent!.trim()).toBe(
+      "No. ClariHear is personalised hearing assistance on your phone: an app that tunes live sound to your hearing profile. It isn't a medical device.",
+    );
+  });
+});

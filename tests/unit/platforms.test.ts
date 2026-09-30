@@ -26,7 +26,7 @@ describe('platform copy', () => {
     const faq = [...idx.querySelectorAll('details')].find(d => d.querySelector('summary')?.textContent?.trim() === 'When does it launch?');
     expect(faq?.querySelector('p')?.textContent?.trim()).toBe('On iPhone and Android. Early-access members hear first.');
     const priv = pages['privacy.html'].window.document.body.textContent ?? '';
-    expect(priv).toContain('ClariHear is a pre-launch sound-amplifier app for iPhone and Android. You can reach us at');
+    expect(priv).toContain('ClariHear is a pre-launch personalised hearing assistance app for iPhone and Android. You can reach us at');
   });
   for (const [name, dom] of Object.entries(pages)) {
     const d = dom.window.document;

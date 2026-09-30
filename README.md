@@ -1,8 +1,9 @@
 # ClariHear pre-launch site
 
-The pre-launch website for ClariHear, a sound amplifier app that helps you hear
-conversations and everyday sound more clearly. ClariHear is not a medical
-device. The site explains the app and collects early-access sign-ups.
+The pre-launch website for ClariHear, a personalised hearing assistance app: a
+quick tone check (or a professional audiogram) builds your hearing profile, and
+ClariHear tunes live sound to it, frequency by frequency, for wherever you are.
+ClariHear is not a medical device. The site explains the app and collects early-access sign-ups.
 
 ## Local development
 
