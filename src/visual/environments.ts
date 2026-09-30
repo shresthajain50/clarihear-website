@@ -25,6 +25,11 @@ export const ENVIRONMENTS: Record<EnvId, {label: string; description: string; ba
 
 export const BANDS_HZ: readonly number[] = [250, 500, 1000, 2000, 4000, 8000];
 
+/** A 12 dB cut fills the whole depth below the 0 dB baseline. */
+export const DB_FULL_DEPTH = 12;
+/** Pixels per dB; must match --env-db in sections.css. */
+export const PX_PER_DB = 12;
+
 const bandLabel = (hz: number) => (hz >= 1000 ? `${hz / 1000} kHz` : `${hz} Hz`);
 const fmtDb = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0');
 
@@ -33,21 +38,39 @@ export function initEnvironmentPicker(root: HTMLElement): void {
   const chart = document.getElementById('env-chart');
   const desc = document.getElementById('env-desc');
 
+  const cols: HTMLElement[] = [];
   const bars: HTMLElement[] = [];
+  const caps: HTMLElement[] = [];
+  const values: HTMLElement[] = [];
   if (chart) {
     chart.setAttribute('role', 'img');
     chart.textContent = '';
+    const baseline = document.createElement('div');
+    baseline.className = 'env-baseline';
+    chart.appendChild(baseline);
     BANDS_HZ.forEach(hz => {
       const col = document.createElement('div');
       col.className = 'env-col';
+      const track = document.createElement('div');
+      track.className = 'env-track';
+      // One dB tall, anchored on the baseline; scaleY(n) extends it n dB down,
+      // scaleY(-n) flips it n dB up. Only transform changes, so it animates cheaply.
       const bar = document.createElement('div');
       bar.className = 'env-bar';
+      const cap = document.createElement('div');
+      cap.className = 'env-cap';
+      track.append(bar, cap);
       const label = document.createElement('span');
       label.className = 'env-bar__label';
       label.textContent = bandLabel(hz);
-      col.append(bar, label);
+      const value = document.createElement('span');
+      value.className = 'env-bar__value';
+      col.append(track, label, value);
       chart.appendChild(col);
+      cols.push(col);
       bars.push(bar);
+      caps.push(cap);
+      values.push(value);
     });
   }
 
@@ -59,9 +82,13 @@ export function initEnvironmentPicker(root: HTMLElement): void {
       r.setAttribute('aria-checked', String(i === index));
       r.tabIndex = i === index ? 0 : -1;
     });
-    bars.forEach((bar, i) => {
-      const o = env.bandOffsetsDb[i];
-      bar.style.transform = `scaleY(${(o + 12) / 13})`;
+    env.bandOffsetsDb.forEach((o, i) => {
+      if (!bars[i]) return;
+      const depth = Math.max(-DB_FULL_DEPTH, Math.min(DB_FULL_DEPTH, o));
+      bars[i].style.transform = `scaleY(${-depth || 0})`;
+      caps[i].style.transform = `translateY(${-depth * PX_PER_DB || 0}px)`;
+      cols[i].dataset.dir = o > 0 ? 'up' : o < 0 ? 'down' : 'flat';
+      values[i].textContent = `${fmtDb(o)} dB`;
     });
     if (chart) {
       const parts = BANDS_HZ.map((hz, i) => `${bandLabel(hz)} ${fmtDb(env.bandOffsetsDb[i])} dB`);
