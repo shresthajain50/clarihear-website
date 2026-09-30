@@ -90,6 +90,9 @@ export default function CountUp({
 
       const durationTimeoutId = setTimeout(
         () => {
+          // MODIFIED: snap to the exact target when the duration ends, so the final text always
+          // equals the real value (the spring's slow tail could otherwise stop a step short).
+          springValue.jump(direction === 'down' ? from : to);
           if (typeof onEnd === 'function') {
             onEnd();
           }
@@ -102,7 +105,7 @@ export default function CountUp({
         clearTimeout(durationTimeoutId);
       };
     }
-  }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration]);
+  }, [isInView, startWhen, motionValue, springValue, direction, from, to, delay, onStart, onEnd, duration]);
 
   useEffect(() => {
     const unsubscribe = springValue.on('change', (latest: number) => {

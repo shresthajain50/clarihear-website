@@ -92,13 +92,20 @@ export function enhanceHeroCta(root: ParentNode, opts: Opts): (() => void) | nul
 
 /* ---------- SoftAurora: decorative WebGL behind the hero ---------- */
 
+const SOFTWARE_RENDERER = /swiftshader|llvmpipe|softpipe|software|basic render/i;
+
+/** A hardware WebGL context is available. */
 function hasWebGL(): boolean {
   try {
     const canvas = document.createElement('canvas');
     const gl = (canvas.getContext('webgl2') ?? canvas.getContext('webgl')) as WebGLRenderingContext | null;
     if (!gl) return false;
+    // No GPU (software rasteriser): the shader would load the CPU and stall the page, so keep
+    // the CSS gradient instead.
+    const info = gl.getExtension?.('WEBGL_debug_renderer_info') as {UNMASKED_RENDERER_WEBGL: number} | null;
+    const renderer = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
     gl.getExtension?.('WEBGL_lose_context')?.loseContext(); // only a probe; free it straight away
-    return true;
+    return !SOFTWARE_RENDERER.test(renderer);
   } catch {
     return false;
   }

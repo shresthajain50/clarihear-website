@@ -199,6 +199,21 @@ describe('enhanceHeroAurora', () => {
     expect(hero().outerHTML).toBe(before);
   });
 
+  it('is not mounted on a software WebGL renderer (no GPU: SwiftShader / llvmpipe)', () => {
+    const spy = withWebGL(true);
+    stubRaf();
+    for (const renderer of ['ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device), SwiftShader driver)', 'llvmpipe (LLVM 15.0.7, 256 bits)', 'Microsoft Basic Render Driver']) {
+      const gl = {
+        getExtension: (name: string) => (name === 'WEBGL_debug_renderer_info' ? {UNMASKED_RENDERER_WEBGL: 0x9246} : null),
+        getParameter: (p: number) => (p === 0x9246 ? renderer : ''),
+      };
+      spy.mockImplementation((() => gl) as never);
+      const before = hero().outerHTML;
+      expect(enhanceHeroAurora(hero(), {reducedMotion: false}), renderer).toBeNull();
+      expect(hero().outerHTML).toBe(before);
+    }
+  });
+
   it('mounts a decorative, non-interactive canvas behind the hero', () => {
     withWebGL(true);
     const raf = stubRaf();

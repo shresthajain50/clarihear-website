@@ -117,3 +117,12 @@ describe('enhanceProfileCounts', () => {
     expect(values()).toEqual(CAFE);
   });
 });
+
+describe('boost labels land exactly when the count ends', () => {
+  it('shows the exact real labels once the duration is over (no slow spring tail)', async () => {
+    const unmount = enhanceProfileCounts(section(), {reducedMotion: false, duration: 0.3});
+    await sleep(700);
+    expect(values()).toEqual(EVERYDAY);
+    unmount?.();
+  });
+});
