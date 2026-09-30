@@ -55,6 +55,20 @@ describe('index.html structure', () => {
     }
   });
 
+  it('pairs the join form with a "What happens next" panel', () => {
+    const layout = q('#join .join-layout')!;
+    expect(layout).not.toBeNull();
+    expect(layout.querySelector('.form-card form#signup')).not.toBeNull();
+    const panel = layout.querySelector('.join-next')!;
+    expect(panel).not.toBeNull();
+    expect(panel.querySelector('h3')?.textContent?.trim()).toBe('What happens next');
+    expect([...panel.querySelectorAll('ol > li')].map(li => li.textContent!.trim())).toEqual([
+      'We email you when early access opens.',
+      'You can withdraw anytime.',
+      'We never sell your details.',
+    ]);
+  });
+
   it('never pre-ticks consent', () => {
     const consent = q('#signup input[name=consent]')!;
     expect(consent.getAttribute('type')).toBe('checkbox');

@@ -321,9 +321,63 @@ details > p {
   color: var(--c-text-secondary);
 }
 
-/* Form */
+/* Join: form + "What happens next" (two columns from 960px) */
+.join-layout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 560px);
+  justify-content: center;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .join-layout {
+    grid-template-columns: minmax(0, 560px) minmax(0, 420px);
+    gap: 24px;
+  }
+}
+
 .form-card {
+  width: 100%;
   max-width: 560px;
+}
+
+.join-next {
+  max-width: 560px;
+}
+
+.join-steps {
+  list-style: none;
+  counter-reset: step;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.join-steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 44px;
+  min-height: 32px;
+  margin-bottom: 16px;
+  color: var(--c-text-secondary);
+  display: flex;
+  align-items: center;
+}
+
+.join-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--c-primary);
+  color: var(--c-primary);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .field {
