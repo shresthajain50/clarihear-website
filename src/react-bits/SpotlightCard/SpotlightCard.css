@@ -1,0 +1,33 @@
+/* Source: React Bits (https://reactbits.dev) SpotlightCard-TS-CSS — MIT + Commons Clause. Vendored unmodified except where marked MODIFIED. */
+.card-spotlight {
+  /* MODIFIED: an absolutely positioned layer filling the existing card (no border, background or
+     padding of its own; the card keeps its look), ignoring the pointer. */
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: inherit;
+  pointer-events: none;
+  overflow: hidden;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --spotlight-color: rgba(255, 255, 255, 0.05);
+}
+
+.card-spotlight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 80%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+/* MODIFIED: shown while the host card (not the layer) is hovered or has focus. */
+.has-spotlight:hover .card-spotlight::before,
+.has-spotlight:focus-within .card-spotlight::before {
+  opacity: 0.6;
+}

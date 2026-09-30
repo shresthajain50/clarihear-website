@@ -19,6 +19,8 @@ test('pages make no third-party requests on load', async ({page}) => {
   });
   for (const path of ['/', '/privacy.html', '/credits.html']) {
     await page.goto(path);
+    // Includes the lazily loaded islands chunk (and the aurora) on the index.
+    if (path === '/') await page.waitForSelector('html[data-islands]', {state: 'attached'});
     await page.waitForLoadState('networkidle');
   }
   expect(external).toEqual([]);
@@ -73,13 +75,22 @@ test('no horizontal overflow on mobile', async ({page}, info) => {
   for (const path of ['/', '/privacy.html', '/credits.html']) {
     await page.goto(path);
     await expect(page.locator('h1')).toBeVisible();
+    if (path === '/') await page.waitForSelector('html[data-islands]', {state: 'attached'});
     const res = await page.evaluate(() => {
       const w = window.innerWidth;
+      // Clipped by an overflow:hidden ancestor that itself fits (e.g. StarBorder's moving glints).
+      const clipped = (el: Element) => {
+        for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+          const o = getComputedStyle(a).overflowX;
+          if ((o === 'hidden' || o === 'clip') && a.getBoundingClientRect().right <= w + 0.5) return true;
+        }
+        return false;
+      };
       const offenders = [...document.querySelectorAll('body *')]
         .filter((el) => {
           const cs = getComputedStyle(el);
           if (cs.position === 'fixed' || cs.display === 'none') return false;
-          return el.getBoundingClientRect().right > w + 0.5;
+          return el.getBoundingClientRect().right > w + 0.5 && !clipped(el);
         })
         .map((el) => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + '.' + String(el.className).slice(0, 40));
       return {sw: document.documentElement.scrollWidth, w, offenders};
@@ -206,4 +217,64 @@ test('reduced motion: no pitch pulse', async ({page}) => {
   await page.emulateMedia({reducedMotion: 'reduce'});
   await page.goto('/');
   await expect(page.locator('#profile .is-pulsing')).toHaveCount(0);
+});
+
+test('reduced motion: no islands, no aurora canvas, CTA as authored', async ({page}) => {
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(1500); // longer than the idle-callback timeout
+  await expect(page.locator('html[data-islands]')).toHaveCount(0);
+  await expect(page.locator('#hero canvas')).toHaveCount(0);
+  await expect(page.locator('.hero-aurora, .star-border-container, .card-spotlight')).toHaveCount(0);
+  await expect(page.locator('#hero .hero-actions a[href="#join"]')).toHaveText('Join early access');
+});
+
+test('motion: hero CTA keeps its link, name, focus ring and 44px target', async ({page}) => {
+  await page.goto('/');
+  await page.waitForSelector('html[data-islands="ready"]', {state: 'attached'});
+  const cta = page.locator('#hero .hero-actions a[href="#join"]');
+  await expect(cta.locator('.star-border-container')).toHaveCount(1);
+  await expect(page.locator('#hero').getByRole('link', {name: 'Join early access', exact: true})).toHaveCount(1);
+  await expect(page.locator('header .star-border-container')).toHaveCount(0);
+  const box = (await cta.boundingBox())!;
+  expect(box.height).toBeGreaterThanOrEqual(44);
+  expect(box.width).toBeGreaterThanOrEqual(44);
+  await cta.focus();
+  await expect(cta).toBeFocused();
+  // Keyboard focus shows the site's ring on the link itself (not clipped by the border effect).
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  await expect(cta).toHaveCSS('outline-style', 'solid');
+  await cta.click();
+  await expect(page).toHaveURL(/#join$/);
+});
+
+test('motion: aurora is decorative and non-interactive (or absent without WebGL)', async ({page}) => {
+  await page.goto('/');
+  await page.waitForSelector('html[data-islands="ready"]', {state: 'attached'});
+  const host = page.locator('#hero > .hero-aurora');
+  if ((await host.count()) === 0) {
+    // No WebGL: the CSS gradient stays and nothing is mounted.
+    await expect(page.locator('#hero canvas')).toHaveCount(0);
+    return;
+  }
+  await expect(host).toHaveAttribute('aria-hidden', 'true');
+  await expect(host).toHaveCSS('pointer-events', 'none');
+  await expect(host.locator('canvas')).toHaveCount(1);
+  // The copy still receives clicks above it.
+  await page.locator('#hero .hero-actions a[href="#how"]').click();
+  await expect(page).toHaveURL(/#how$/);
+});
+
+test('spotlight cards: fine pointers only', async ({page}, info) => {
+  await page.goto('/');
+  await page.waitForSelector('html[data-islands="ready"]', {state: 'attached'});
+  const layers = page.locator('#honest .card-spotlight, #privacy-promise .card-spotlight, #profile .card-spotlight');
+  if (info.project.name === 'chromium-mobile') {
+    await expect(layers).toHaveCount(0);
+  } else {
+    expect(await layers.count()).toBeGreaterThanOrEqual(9);
+    await expect(page.locator('#how .card-spotlight')).toHaveCount(0);
+  }
 });

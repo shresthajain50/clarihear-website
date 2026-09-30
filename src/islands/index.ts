@@ -1,5 +1,6 @@
 import {enhanceEyebrow, enhanceHeadings} from './text';
 import {enhanceProfileCounts} from './profile';
+import {enhanceHeroAurora, enhanceHeroCta, enhanceSpotlightCards} from './surfaces';
 
 // React Bits islands enhance HTML that is already complete; any failure leaves it as authored.
 const enhance = (fn: () => unknown) => {
@@ -18,4 +19,8 @@ export function enhanceAll(doc: Document, opts: {reducedMotion: boolean}): void 
   enhance(() => enhanceHeadings(doc, opts));
   const profile = doc.getElementById('profile');
   if (profile) enhance(() => enhanceProfileCounts(profile, opts));
+  enhance(() => enhanceSpotlightCards(doc, opts)); // fine pointers only
+  enhance(() => enhanceHeroCta(doc, opts));
+  const hero = doc.getElementById('hero');
+  if (hero) enhance(() => enhanceHeroAurora(hero, opts)); // WebGL only; pauses off screen / hidden tab
 }

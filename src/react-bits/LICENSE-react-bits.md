@@ -1,6 +1,6 @@
 # React Bits licence
 
-The components in this folder (`ShinyText`, `BlurText`, `CountUp`) are vendored from
+The components in this folder (`ShinyText`, `BlurText`, `CountUp`, `SpotlightCard`, `StarBorder`, `SoftAurora`) are vendored from
 [React Bits](https://reactbits.dev) by David Haz (https://github.com/DavidHDev/react-bits),
 using the official TS-CSS registry entries (`https://reactbits.dev/r/<Name>-TS-CSS.json`).
 Each file says where it came from; any local change is marked `MODIFIED`.
