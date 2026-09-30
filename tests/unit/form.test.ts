@@ -91,7 +91,7 @@ describe('form controller', () => {
     expect(submit).toHaveBeenCalledTimes(1);
   });
 
-  it('passes honeypot state and hCaptcha token', async () => {
+  it('passes honeypot state and never reads or sends an hCaptcha token', async () => {
     const submit = vi.fn(async () => ({ok: true as const}));
     initSignupForm(form, {accessKey: 'k', submit});
     const ta = document.createElement('textarea');
@@ -101,7 +101,9 @@ describe('form controller', () => {
     $('botcheck').checked = true;
     fillValid();
     submitEvent();
-    expect((submit.mock.calls[0] as unknown[])[1]).toMatchObject({botcheck: true, hcaptchaToken: 'tok'});
+    const opts = (submit.mock.calls[0] as unknown[])[1] as Record<string, unknown>;
+    expect(opts).toMatchObject({botcheck: true});
+    expect('hcaptchaToken' in opts).toBe(false);
   });
 
   it('success shows first-name message, hides form, focuses status', async () => {

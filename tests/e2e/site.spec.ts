@@ -3,13 +3,6 @@ import AxeBuilder from '@axe-core/playwright';
 
 const ENDPOINT = 'https://api.web3forms.com/submit';
 
-test.beforeEach(async ({page}) => {
-  await page.route(/web3forms\.com\/client\/script\.js/, (r) =>
-    r.fulfill({status: 200, contentType: 'text/javascript', body: ''}),
-  );
-  await page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
-});
-
 async function fill(page: Page) {
   await page.locator('#name').fill('Asha Rao');
   await page.locator('#email').fill('asha@example.com');
@@ -17,6 +10,19 @@ async function fill(page: Page) {
   await page.locator('#age').fill('34');
   await page.locator('#consent').check();
 }
+
+test('pages make no third-party requests on load', async ({page}) => {
+  const external: string[] = [];
+  page.on('request', (r) => {
+    const u = new URL(r.url());
+    if (u.hostname !== 'localhost') external.push(r.url());
+  });
+  for (const path of ['/', '/privacy.html']) {
+    await page.goto(path);
+    await page.waitForLoadState('networkidle');
+  }
+  expect(external).toEqual([]);
+});
 
 test('index loads with an h1', async ({page}) => {
   await page.goto('/');

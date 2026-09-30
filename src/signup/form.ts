@@ -91,15 +91,10 @@ export function initSignupForm(form: HTMLFormElement, opts: FormOptions): void {
     }
     if (status) status.textContent = '';
 
-    const token = form.querySelector<HTMLTextAreaElement>('textarea[name="h-captcha-response"]')?.value;
     const botcheck = form.querySelector<HTMLInputElement>('#botcheck')?.checked ?? false;
     const data = result.value;
 
-    void submit(data, {
-      accessKey,
-      botcheck,
-      ...(token ? {hcaptchaToken: token} : {}),
-    })
+    void submit(data, {accessKey, botcheck})
       .then(res => {
         if (res.ok) {
           const first = data.name.split(/\s+/)[0];
