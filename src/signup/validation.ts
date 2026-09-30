@@ -28,7 +28,11 @@ export const MESSAGES = {
   consent: 'Please agree so we can contact you about early access.',
 } as const satisfies Record<string, string>;
 
-const NAME_RE = /^[\p{L}][\p{L}\s.'-]{1,79}$/u;
+const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M} .'-]{1,79}$/u;
+
+function cleanName(raw: string): string {
+  return raw.trim().normalize('NFC').replace(/\s+/g, ' ');
+}
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function toE164(raw: string): string | null {
@@ -49,7 +53,7 @@ function parseAge(raw: string): { age: number } | { error: string } {
 export function validateField(field: Field, input: SignupInput): string | null {
   switch (field) {
     case 'name': {
-      const v = input.name.trim();
+      const v = cleanName(input.name);
       if (!v) return MESSAGES.nameEmpty;
       return NAME_RE.test(v) ? null : MESSAGES.nameInvalid;
     }
@@ -85,7 +89,7 @@ export function validateAll(
   return {
     ok: true,
     value: {
-      name: input.name.trim(),
+      name: cleanName(input.name),
       email: input.email.trim().toLowerCase(),
       phone: toE164(input.phone.trim())!,
       age: (age as { age: number }).age,

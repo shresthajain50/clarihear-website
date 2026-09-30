@@ -52,6 +52,41 @@ describe('name', () => {
   });
 });
 
+describe('name normalisation and scripts', () => {
+  it('accepts Devanagari with combining marks', () => {
+    expect(validateField('name', with_({ name: 'आशा' }))).toBeNull();
+  });
+  it('accepts NFD Zoë and returns NFC', () => {
+    const nfd = 'Zoe\u0308';
+    expect(validateField('name', with_({ name: nfd }))).toBeNull();
+    const r = validateAll(with_({ name: nfd }));
+    expect(r.ok && r.value.name).toBe('Zo\u00EB');
+  });
+  it('collapses tabs and newlines', () => {
+    const a = validateAll(with_({ name: 'Asha\t\tRao' }));
+    expect(a.ok && a.value.name).toBe('Asha Rao');
+    const b = validateAll(with_({ name: 'A\nB' }));
+    expect(b.ok && b.value.name).toBe('A B');
+  });
+  it('length measured after collapsing', () => {
+    expect(validateField('name', with_({ name: 'A' + ' '.repeat(5) + 'B' }))).toBeNull();
+  });
+});
+
+describe('extra email/phone cases', () => {
+  it('keeps plus tag in email', () => {
+    const r = validateAll(with_({ email: 'a+x@d.com' }));
+    expect(r.ok && r.value.email).toBe('a+x@d.com');
+  });
+  it('+91 prefix normalises', () => {
+    const r = validateAll(with_({ phone: '+91 98765 43210' }));
+    expect(r.ok && r.value.phone).toBe('+919876543210');
+  });
+  it('short Indian number invalid', () => {
+    expect(validateField('phone', with_({ phone: '98765 4321' }))).toBe(MESSAGES.phoneInvalid);
+  });
+});
+
 describe('email', () => {
   it('empty and invalid', () => {
     expect(validateField('email', with_({ email: ' ' }))).toBe(MESSAGES.emailEmpty);
