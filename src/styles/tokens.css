@@ -1,0 +1,23 @@
+:root {
+  --c-bg0: #050810;
+  --c-bg1: #0a0f1c;
+  --c-bg2: #111827;
+  --c-bg3: #1c2539;
+  --c-glass: rgba(255, 255, 255, 0.05);
+  --c-glass-border: rgba(255, 255, 255, 0.1);
+  --c-primary: #00d4ff;
+  --c-primary-dim: #0099bb;
+  /* Decorative only: never used for text or errors. */
+  --c-secondary: #7b61ff;
+  --c-success: #22d3a5;
+  --c-warning: #ffb347;
+  --c-danger: #ff5e7d;
+  --c-text: #f1f5f9;
+  --c-text-secondary: #94a3b8;
+  --c-text-muted: #475569;
+
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --radius: 16px;
+  --header-h: 72px;
+  --max-w: 1080px;
+}

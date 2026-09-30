@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0A0F1C" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <title>ClariHear - a personal sound amplifier for iPhone</title>
+    <meta name="description" content="ClariHear turns your iPhone and earbuds into a personal sound amplifier for clearer everyday sound. Join the early-access list." />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <div class="container">
+        <a class="wordmark" href="./">ClariHear</a>
+        <nav class="site-nav" aria-label="Main">
+          <a href="./#how">How it works</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="./#faq">FAQ</a>
+        </nav>
+        <a class="btn btn--primary" href="./#join">Join early access</a>
+      </div>
+    </header>
+    <main id="main">
+      <section id="hero" class="hero" data-scroll-world aria-labelledby="hero-title">
+        <div class="container">
+          <p class="eyebrow">Coming soon to iPhone</p>
+          <h1 id="hero-title">Hear the conversation again.</h1>
+          <p class="lead">ClariHear turns your iPhone and earbuds into a personal sound amplifier, tuned to how you hear and to where you are.</p>
+          <div class="hero-actions">
+            <a class="btn btn--primary" href="#join">Join early access</a>
+            <a class="btn btn--ghost" href="#how">How it works</a>
+          </div>
+          <div class="wave-wrap">
+            <svg id="wave" viewBox="0 0 800 160" role="img" aria-label="A sound wave that moves from noisy to clean" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="wave-grad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#00D4FF" />
+                  <stop offset="1" stop-color="#7B61FF" />
+                </linearGradient>
+              </defs>
+              <path d="M0 80 C 100 20, 200 140, 300 80 S 500 20, 600 80 S 750 120, 800 80" fill="none" stroke="url(#wave-grad)" stroke-width="4" stroke-linecap="round" />
+            </svg>
+            <div class="wave-controls">
+              <button id="wave-toggle" class="btn btn--ghost" type="button" aria-pressed="false">Pause animation</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="honest" aria-labelledby="honest-title">
+        <div class="container">
+          <h2 id="honest-title" class="reveal">What ClariHear is, and isn't</h2>
+          <div class="honest-grid">
+            <div class="card reveal">
+              <h3>What it is</h3>
+              <ul class="tick-list tick-list--is">
+                <li>A sound amplifier app for everyday listening</li>
+                <li>Personalised with a quick in-app tone check</li>
+                <li>Built for adults 18 and over</li>
+              </ul>
+            </div>
+            <div class="card reveal">
+              <h3>What it isn't</h3>
+              <ul class="tick-list tick-list--isnt">
+                <li>Not a medical device</li>
+                <li>Doesn't diagnose or treat hearing loss</li>
+                <li>Not a replacement for a hearing professional</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how" aria-labelledby="how-title">
+        <div class="container">
+          <h2 id="how-title" class="reveal">How it works</h2>
+          <div class="card-grid card-grid--3">
+            <div class="card reveal">
+              <h3><span class="step-num">1 · </span>A few safety questions</h3>
+              <p>Anything that needs a professional is flagged first.</p>
+            </div>
+            <div class="card reveal">
+              <h3><span class="step-num">2 · </span>Check your earbuds and tune</h3>
+              <p>A left/right check and a short tone check personalise your sound.</p>
+            </div>
+            <div class="card reveal">
+              <h3><span class="step-num">3 · </span>Listen live</h3>
+              <p>Conversations, TV and lectures, clearer, with an instant mute.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="places" aria-labelledby="places-title">
+        <div class="container">
+          <h2 id="places-title" class="reveal">Real places</h2>
+          <p class="lead reveal">Pick a place to see how ClariHear reshapes your sound there.</p>
+          <div class="card reveal">
+            <div id="env-picker" class="env-picker" role="radiogroup" aria-label="Listening place">
+              <button type="button" role="radio" aria-checked="true" tabindex="0" data-env="quiet">Quiet home</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" data-env="office">Office</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" data-env="cafe">Café</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" data-env="outdoors">Outdoors</button>
+            </div>
+            <div id="env-chart" class="env-chart"></div>
+            <p id="env-desc" aria-live="polite">A quiet room. Your full personal profile.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="privacy-promise" aria-labelledby="promise-title">
+        <div class="container">
+          <h2 id="promise-title" class="reveal">Safety and privacy</h2>
+          <div class="card-grid card-grid--2">
+            <div class="card reveal">
+              <h3>Your audio stays on your phone</h3>
+              <p>Sound is processed on-device and never uploaded.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Amplification with limits</h3>
+              <p>Gain is capped, and loud rooms turn it down automatically.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Mute is always one tap away</h3>
+              <p>Silence the sound instantly whenever you need to.</p>
+            </div>
+            <div class="card reveal">
+              <h3>We'll tell you when to see a professional</h3>
+              <p>If something needs expert attention, ClariHear says so.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" aria-labelledby="faq-title">
+        <div class="container">
+          <h2 id="faq-title" class="reveal">Questions</h2>
+          <details class="reveal">
+            <summary>Is ClariHear a hearing aid?</summary>
+            <p>No. ClariHear is a sound amplifier app, not a medical device.</p>
+          </details>
+          <details class="reveal">
+            <summary>When does it launch?</summary>
+            <p>iPhone first. Early-access members hear first.</p>
+          </details>
+          <details class="reveal">
+            <summary>Which earbuds work?</summary>
+            <p>Most wired and Bluetooth earbuds.</p>
+          </details>
+          <details class="reveal">
+            <summary>What happens to my sign-up details?</summary>
+            <p>They are used only for launch and early-access updates. See our <a href="privacy.html">privacy notice</a>.</p>
+          </details>
+          <details class="reveal">
+            <summary>Is it free?</summary>
+            <p>We'll share pricing before launch.</p>
+          </details>
+        </div>
+      </section>
+
+      <section id="join" aria-labelledby="join-title">
+        <div class="container">
+          <div class="card form-card reveal">
+            <h2 id="join-title">Join early access</h2>
+            <form id="signup" novalidate>
+              <div class="field">
+                <label for="name">Full name</label>
+                <input id="name" name="name" type="text" autocomplete="name" required aria-describedby="name-error" />
+                <p id="name-error" class="field-error"></p>
+              </div>
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" autocomplete="email" required aria-describedby="email-error" />
+                <p id="email-error" class="field-error"></p>
+              </div>
+              <div class="field">
+                <label for="phone">Phone</label>
+                <p id="phone-hint" class="field-hint">Include country code, e.g. +91 98765 43210. Only for launch updates — we never call without asking.</p>
+                <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required aria-describedby="phone-hint phone-error" />
+                <p id="phone-error" class="field-error"></p>
+              </div>
+              <div class="field">
+                <label for="age">Age</label>
+                <p id="age-hint" class="field-hint">You must be 18 or over.</p>
+                <input id="age" name="age" type="text" inputmode="numeric" autocomplete="off" required aria-describedby="age-hint age-error" />
+                <p id="age-error" class="field-error"></p>
+              </div>
+              <div class="field">
+                <div class="consent">
+                  <input id="consent" name="consent" type="checkbox" required aria-describedby="consent-error" />
+                  <label for="consent">I agree that ClariHear may use my name, email, phone number and age to contact me about the launch and early access. I can withdraw anytime. <a href="privacy.html">Privacy notice</a></label>
+                </div>
+                <p id="consent-error" class="field-error"></p>
+              </div>
+              <div class="hp" aria-hidden="true">
+                <label for="botcheck">Leave this empty</label>
+                <input id="botcheck" name="botcheck" type="checkbox" tabindex="-1" autocomplete="off" aria-describedby="botcheck-error" />
+                <p id="botcheck-error" class="field-error"></p>
+              </div>
+              <button id="signup-submit" class="btn btn--primary" type="submit">Join early access</button>
+              <div id="signup-status" class="signup-status" aria-live="polite"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <p>ClariHear is a sound amplifier app and is not a medical device. For adults 18 and over. If you are concerned about your hearing, see a hearing professional.</p>
+        <div class="footer-links">
+          <span>&copy; 2026 ClariHear</span>
+          <a href="privacy.html">Privacy notice</a>
+          <a href="mailto:shresthajain.iitb@gmail.com">shresthajain.iitb@gmail.com</a>
+        </div>
+      </div>
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
