@@ -98,6 +98,23 @@ describe('index.html structure', () => {
       expect(hero!.hasAttribute('loading')).toBe(false);
     });
 
+    it('has an honest app-preview image floating over the hero card', () => {
+      const app = q('#hero .hero-media img.hero-app') as HTMLImageElement | null;
+      expect(app).not.toBeNull();
+      expect(app!.getAttribute('src')).toBe('images/app-cafe.png');
+      expect(app!.getAttribute('srcset')).toContain('images/app-cafe-600.png 600w');
+      expect(app!.getAttribute('srcset')).toContain('images/app-cafe.png 1000w');
+      expect(app!.getAttribute('width')).toBe('1000');
+      expect(app!.getAttribute('height')).toBe('1600');
+      expect(app!.getAttribute('loading')).toBe('eager');
+      expect(app!.getAttribute('decoding')).toBe('async');
+      expect(app!.getAttribute('alt')).toBe('ClariHear app screen with the Café / restaurant setting selected');
+      expect(existsSync(resolve(__dirname, '../../public/images/app-cafe.png'))).toBe(true);
+      expect(existsSync(resolve(__dirname, '../../public/images/app-cafe-600.png'))).toBe(true);
+      expect(q('#hero .hero-media .hero-caption')!.textContent!.trim()).toBe('App preview');
+      expect(q('#hero[data-scroll-world]')!.hasAttribute('hidden')).toBe(false);
+    });
+
     it('keeps the wave inside the hero photo card, h1 outside it', () => {
       expect(q('#hero .hero-media svg#wave')).not.toBeNull();
       expect(q('#hero .hero-media img.hero-photo')).not.toBeNull();

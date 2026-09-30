@@ -36,6 +36,7 @@ describe('privacy notice is truthful about processors', () => {
     expect(text).toMatch(/form-to-email service/);
     expect(text).toMatch(/Google Gmail account/);
     expect(text).toContain('GitHub Pages');
+    expect(text).toMatch(/hosted on Vercel and GitHub Pages/);
     expect(text).toMatch(/IP address/);
   });
 
