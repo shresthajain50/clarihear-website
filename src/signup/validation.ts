@@ -28,7 +28,9 @@ export const MESSAGES = {
   consent: 'Please agree so we can contact you about early access.',
 } as const satisfies Record<string, string>;
 
-const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M} .'-]{1,79}$/u;
+// ZWNJ (U+200C) and ZWJ (U+200D) shape Indic (e.g. Malayalam chillu, Hindi half-forms)
+// and Persian names; allowed after the first character only.
+const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M} .'\u200C\u200D-]{1,79}$/u;
 
 function cleanName(raw: string): string {
   return raw.trim().normalize('NFC').replace(/\s+/g, ' ');

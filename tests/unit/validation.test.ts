@@ -52,6 +52,39 @@ describe('name', () => {
   });
 });
 
+describe('name joiners (ZWJ U+200D / ZWNJ U+200C)', () => {
+  const ZWJ = '\u200D';
+  const ZWNJ = '\u200C';
+  it('accepts a Malayalam name written with ZWJ chillu sequences', () => {
+    // അന്‍വര്‍ (Anvar), old-style chillu: consonant + virama + ZWJ
+    const name = `\u0D05\u0D28\u0D4D${ZWJ}\u0D35\u0D30\u0D4D${ZWJ}`;
+    expect(validateField('name', with_({ name }))).toBeNull();
+    const r = validateAll(with_({ name }));
+    expect(r.ok && r.value.name).toBe(name);
+  });
+  it('accepts a Hindi name with ZWNJ (explicit half-form)', () => {
+    // लक्‌ष्मी with ZWNJ after the virama
+    const name = `\u0932\u0915\u094D${ZWNJ}\u0937\u094D\u092E\u0940`;
+    expect(validateField('name', with_({ name }))).toBeNull();
+  });
+  it('accepts a Hindi name with ZWJ (eyelash ra)', () => {
+    // सूर्‍य : ra + virama + ZWJ
+    const name = `\u0938\u0942\u0930\u094D${ZWJ}\u092F`;
+    expect(validateField('name', with_({ name }))).toBeNull();
+  });
+  it('accepts a Persian name with ZWNJ', () => {
+    expect(validateField('name', with_({ name: `\u0639\u0644\u06CC${ZWNJ}\u0631\u0636\u0627` }))).toBeNull();
+  });
+  it('rejects a joiner as the first character', () => {
+    expect(validateField('name', with_({ name: `${ZWJ}Asha` }))).toBe(MESSAGES.nameInvalid);
+    expect(validateField('name', with_({ name: `${ZWNJ}Asha` }))).toBe(MESSAGES.nameInvalid);
+  });
+  it('still rejects other invisible format characters', () => {
+    expect(validateField('name', with_({ name: 'As\u200Bha' }))).toBe(MESSAGES.nameInvalid);
+    expect(validateField('name', with_({ name: 'As\u2060ha' }))).toBe(MESSAGES.nameInvalid);
+  });
+});
+
 describe('name normalisation and scripts', () => {
   it('accepts Devanagari with combining marks', () => {
     expect(validateField('name', with_({ name: 'आशा' }))).toBeNull();
