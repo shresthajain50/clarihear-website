@@ -1352,3 +1352,11 @@ details > p {
     display: none;
   }
 }
+
+/* Print: show the plain heading text (animated words may still be at opacity 0) and solid CTAs. */
+@media print {
+  .blur-heading { display: none; }
+  h2 > .visually-hidden { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; clip-path: none; white-space: normal; }
+  .reveal--pending { opacity: 1; transform: none; }
+  .btn.btn--star { background: #00d4ff; color: #0a0f1c; }
+}

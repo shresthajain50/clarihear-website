@@ -65,3 +65,29 @@ describe('vite config', () => {
     expect(read('vite.config.ts')).toMatch(/credits:\s*'credits\.html'/);
   });
 });
+
+describe('credits.html open-source notices', () => {
+  const OSS: Array<[string, string]> = [
+    ['react-bits', 'Copyright (c) 2026 David Haz'],
+    ['preact', 'Copyright (c) 2015-present Jason Miller'],
+    ['motion', 'Copyright (c) 2024 Motion B.V.'],
+    ['ogl', 'Unlicense'],
+    ['libphonenumber-js', 'Copyright (c) 2016 @catamphetamine'],
+  ];
+
+  it('lists every bundled open-source package with its licence notice', () => {
+    const section = doc.querySelector('#open-source');
+    expect(section?.querySelector('h2')?.textContent?.trim()).toBe('Open-source software');
+    for (const [pkg, notice] of OSS) {
+      const item = section!.querySelector(`[data-package="${pkg}"]`);
+      expect(item, pkg).not.toBeNull();
+      expect(item!.textContent!.replace(/\s+/g, ' '), pkg).toContain(notice);
+    }
+  });
+
+  it('carries the React Bits Commons Clause condition', () => {
+    const text = doc.querySelector('[data-package="react-bits"]')!.textContent!.replace(/\s+/g, ' ');
+    expect(text).toContain('MIT + Commons Clause');
+    expect(doc.querySelector('[data-package="react-bits"] a[href="https://github.com/DavidHDev/react-bits/blob/main/LICENSE.md"]')).not.toBeNull();
+  });
+});
